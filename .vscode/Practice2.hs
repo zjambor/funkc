@@ -38,6 +38,12 @@ _email :: Person -> String
 _email (Person _ _ email) = email
 -}
 
+zero :: Nat 
+zero = Zero 
+
+three :: Nat 
+three = Suc (Suc (Suc Zero))
+
 -- parameterized
 -- unit ~ Nil
 -- union ~ |

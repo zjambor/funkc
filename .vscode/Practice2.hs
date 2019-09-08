@@ -64,6 +64,13 @@ sum' :: List Nat -> Nat
 sum' Nil = Zero 
 sum' (Cons n xs) = n `addNat` (sum' xs)
 
+-- (n + 1) * m = n * m + m
+mulNat :: Nat -> Nat -> Nat 
+mulNat Zero n = Zero
+mulNat n Zero = Zero
+mulNat (Suc n) m = m `addNat` (n `mulNat` m)
+-- mulNat (Suc (Suc Zero)) (Suc (Suc (Suc Zero)))
+
 instance Show Nat where
   --show :: Nat -> String
   show Zero    = "Zero"

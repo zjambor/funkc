@@ -6,7 +6,7 @@ import Prelude hiding (Eq, Ord, compare, (==), (<), (<=), (>=), (>), max, min)
 
 -- synonym
 -- OverloadedString
-type Name = String
+type Name = Strin
 
 -- compile time difference
 -- no runtime overhead 

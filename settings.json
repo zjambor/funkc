@@ -1,3 +1,6 @@
 {
     "git.allowForcePush": true
+	"http.proxy": "http://haproxy1:8081",
+	"https.proxy": "http://haproxy1:8081",
+	"http.proxyStrictSSL": false
 }

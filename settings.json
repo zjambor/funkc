@@ -1,6 +1,6 @@
 {
     "git.allowForcePush": true
-	"http.proxy": "http://172.16.50.50:8081",
-	"https.proxy": "https://172.16.50.50:8081",
+	"http.proxy": "http://jamborz:szaolikK8585@172.16.50.50:8081",
+	"https.proxy": "https://jamborz:szaolikK8585@172.16.50.50:8081",
 	"http.proxyStrictSSL": false
 }

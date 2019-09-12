@@ -55,11 +55,20 @@ f5 = undefined
 -- �rj egy
 --    "mapList :: (a -> b) -> List a -> List b", ami a lista minden
 --    elem�re egy f�ggv�nyt alkalmaz.
-data List a  -- eg�sz�tsd ki konstruktorokkal
+data List a  = Nil | Cons a (List a)-- eg�sz�tsd ki konstruktorokkal
+  deriving Show
 
 mapList :: (a -> b) -> List a -> List b
-mapList = undefined  -- add meg a defin�ci�t
+mapList f Nil = Nil
+mapList f (Cons a xs) = Cons (f a) (mapList f xs)
+-- add meg a defin�ci�t
+l1 = Cons 1 Nil 
+l2 = Cons 2 l1
+l3 :: List Int
+l3 = Cons 3 l2
 
+times2 :: Int -> Int
+times2 x = x * 2
 
 -- 5. Defini�lj egy "BinTree" t�pust, aminek csak annot�ci� n�lk�li
 --    levelei �s bin�ris el�gaz�sai vannak.  �rj egy "numLeaves ::

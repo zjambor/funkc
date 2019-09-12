@@ -49,3 +49,4 @@ mapTree f TLeaf = TLeaf
 mapTree f (Node a l r) = Node (f a) (mapTree f l) (mapTree f r)
 --n=Node 4 (Node 5 TLeaf TLeaf) (Node 5 TLeaf TLeaf)
 --mapTree times2 n
+

@@ -19,8 +19,15 @@ xor _ _ = False
 --    P�lda: sqrsum 10 == 285. Tipp: listakifejez�st �rdemes haszn�lni,
 --    l�sd: http://lambda.inf.elte.hu/Comprehensions.xml
 sqrSum :: Int -> Int   -- sum of first n square numbers
-sqrSum n = undefined
+sqrSum n | n == 0 = 0
+         | otherwise = sumSquares (toList n)
 
+sumSquares :: [Int] -> Int
+sumSquares []       = 0
+sumSquares (x:xs)   = x * x + sumSquares xs
+
+toList :: Int -> [Int]
+toList a = [0..a-1]
 
 -- 3. Defini�ld a k�vetkez� f�ggv�nyeket tetsz�legesen, de
 --    t�pushelyesen �s tot�lis f�ggv�nyk�nt (nem lehet v�gtelen loop
@@ -91,5 +98,5 @@ fromList = undefined
 
 --    �rj egy "toList :: NonEmptyList a -> [a]" f�ggv�nyt, ami �rtelemszer�en
 --    m�k�dik
-toList :: NonEmptyList a -> [a]
-toList = undefined
+--toList :: NonEmptyList a -> [a]
+--toList = undefined

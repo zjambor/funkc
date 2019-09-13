@@ -20,7 +20,10 @@ xor _ _ = False
 --    l�sd: http://lambda.inf.elte.hu/Comprehensions.xml
 sqrSum :: Int -> Int   -- sum of first n square numbers
 sqrSum n | n == 0 = 0
-         | otherwise = sumSquares (toList n)
+         | otherwise = sumSquares [0..n-1] --(toList n)
+
+sqrSum' :: Int -> Int
+sqrSum' n = sum [x*x | x <- [0..n-1]]
 
 sumSquares :: [Int] -> Int
 sumSquares []       = 0

@@ -10,9 +10,7 @@
 
 -- 1. Defini�ld a "xor" m�veletet Bool t�puson.
 xor :: Bool -> Bool -> Bool
-xor True False = True
-xor False True = True
-xor _ _ = False
+xor a b = a /= b
 
 
 -- 2. �rj egy f�ggv�nyt, ami megadja az els� n darab n�gyzetsz�m �sszeg�t.
@@ -36,19 +34,19 @@ toList a = [0..a-1]
 --    t�pushelyesen �s tot�lis f�ggv�nyk�nt (nem lehet v�gtelen loop
 --    vagy kiv�tel).
 f1 :: (a, (b, (c, d))) -> (b, c)
-f1 = undefined
+f1 (a, (b, (c, d))) = (b, c)
 
 f2 :: (a -> b) -> a -> b
-f2 = undefined
+f2 f a = f a
 
 f3 :: (b -> c) -> (a -> b) -> a -> c
-f3 = undefined
+f3 f g a = f (g a)
 
 f4 :: (a -> b -> c) -> (b -> a -> c)
-f4 = undefined
+f4 f b a = f a b
 
 f5 :: ((a, b) -> c) -> (a -> b -> c)
-f5 = undefined
+f5 f a b = f (a, b)
 
 
 -- 4. Defini�ld �jra a lista t�pust ADT-k�nt, "List a" n�ven.  Legyen

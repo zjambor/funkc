@@ -21,3 +21,13 @@ instance Eq a => Eq (Tree a) where
     (==) (Node a xl xr) (Node b yl yr) = (a == b) && xl == yl && xr == yr
     (==) _ _ = False
 --(Node x xl xr) == (Node y yl yr) = (x == y) && xl == yl && xr == yr
+
+doubleSmallNumber x = if x > 100  
+    then x  
+    else x*2   
+
+doubleSmallNumber' x = (if x > 100 then x else x*2) + 1  
+
+d1 = doubleSmallNumber 105
+d2 = doubleSmallNumber 95
+d3 = doubleSmallNumber' 95

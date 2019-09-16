@@ -31,3 +31,8 @@ doubleSmallNumber' x = (if x > 100 then x else x*2) + 1
 d1 = doubleSmallNumber 105
 d2 = doubleSmallNumber 95
 d3 = doubleSmallNumber' 95
+
+--removeNonUppercase :: [Char] -> [Char]  
+--removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']] 
+removeNonUppercase st = [ c | c <- st, c == 'm']
+

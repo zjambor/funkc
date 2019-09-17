@@ -36,6 +36,16 @@ d3 = doubleSmallNumber' 95
 --removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']] 
 removeNonUppercase st = [ c | c <- st, c == 'm']
 
+eqBool :: Bool -> Bool -> Bool
+eqBool True  True  = True
+eqBool False False = True
+eqBool _     _     = False
+
+eqList :: (a -> a -> Bool) -> [a] -> [a] -> Bool
+eqList eqa []     []     = True
+eqList eqa (x:xs) (y:ys) = eqa x y && eqList eqa xs ys
+eqList _   _      _      = False
+
 class Eq' a where        -- osztály deklaráció
     eq :: a -> a -> Bool   -- osztály metódus  
   

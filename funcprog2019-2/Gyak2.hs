@@ -36,3 +36,32 @@ d3 = doubleSmallNumber' 95
 --removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']] 
 removeNonUppercase st = [ c | c <- st, c == 'm']
 
+class Eq' a where        -- osztály deklaráció
+    eq :: a -> a -> Bool   -- osztály metódus  
+  
+instance Eq' Bool where  -- instance
+    eq True  True  = True
+    eq False False = True
+    eq _     _     = False
+    
+--class EqT a where        -- osztály deklaráció
+--    eqTree :: a -> a -> Bool   -- osztály metódus
+
+instance Eq' Int where  -- instance
+    eq x y  = x == y
+    --eq False False = True
+    --eq _     _     = False
+
+instance Eq' a => Eq' [a] where
+        eq [] [] = True
+        eq (x:xs) (y:ys) = eq x y           &&    eq xs ys
+        --    ^ eq "a" típusra       ^ rekurzív hívás
+        eq _ _ = False
+
+--instance Eq' (Tree a) where
+instance Eq' a => Eq' (Tree a) where  -- instance   
+    eq Leaf Leaf = True
+    eq Leaf _ = False
+    eq _ Leaf = False
+    --eq _ _ = False
+    eq (Node a xl xr) (Node b yl yr) = eq a b && eq xl yl && eq xr yr

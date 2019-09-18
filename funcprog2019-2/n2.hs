@@ -85,6 +85,9 @@ instance Monoid (Prod Int) where
 -- listákhoz megírni semigroup monoidokat 
 -- tetszőleges típus, aminek nincs egységeleme
 
+instance Monoid [a] where
+    mempty  = []
+
 -- Functor f :: * -> *           Kind / type of types
 -- típusok típusa
 -- egy műveletet vár el:

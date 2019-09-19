@@ -54,7 +54,6 @@ getSum (Sum x) = x -}
 newtype Sum a = Sum { getSum :: a}
     deriving (Eq,Ord,Show)
 
-
 -- Sum {getSum = True}
 
 newtype Prod a = Prod { getProd :: a}
@@ -67,9 +66,18 @@ instance Semigroup (Prod Int) where
     (<>) (Prod n) (Prod k) = Prod (n * k)
 --
 -- Sum 2 <> Sum 3 :: Sum Int
+-- Prod 2 <> Prod 3 :: Prod Int
+-- Concat [1,2] <> Concat [3,4] :: Concat [Int]
 
 -- 2 :: Int
 -- 2 :: Double
+
+-- newtype Matrix a = Mat ((Int,Int),(Int,Int) -> a)
+newtype Concat a = Concat { getConcat :: [a] }
+    deriving (Eq,Ord,Show)
+
+instance Semigroup (Concat [a]) where
+    (<>) (Concat [n]) (Concat [m]) = Concat ([n] ++ [m])
 
 -- superclass -> class
 class Semigroup m => Monoid m where    -- van egy egységeleme - mempty
@@ -85,8 +93,17 @@ instance Monoid (Prod Int) where
 -- listákhoz megírni semigroup monoidokat 
 -- tetszőleges típus, aminek nincs egységeleme
 
+instance Monoid (Concat [a]) where
+    mempty = Concat []
+
+instance Semigroup [a] where
+    (<>) = (++)
+    
 instance Monoid [a] where
-    mempty  = []
+    mempty = []
+
+-- ['1','2'] <> ['3','4']
+-- [1,2] <> [3,4]
 
 -- Functor f :: * -> *           Kind / type of types
 -- típusok típusa
@@ -106,3 +123,13 @@ instance Functor List where
     fmap f (Cons x xs) = Cons (f x) (fmap f xs)
     --
 --
+{-Functor ZipList
+
+Since: 2.1
+
+Defined in Control.Applicative
+
+Methods
+
+fmap :: (a -> b) -> ZipList a -> ZipList b
+(<$) :: a -> ZipList b -> ZipList a -}

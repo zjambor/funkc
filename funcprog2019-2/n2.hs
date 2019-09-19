@@ -7,6 +7,10 @@ fact :: Int -> Int
 fact 0 = 1
 fact n = n * fact (n-1)
 
+factl :: [Int] -> [Int] 
+factl [] = []
+factl (x : xs) = (fact x) : (factl xs)
+
 data Union a b = Left a                 -- Either a b   +
             | Right b       
 

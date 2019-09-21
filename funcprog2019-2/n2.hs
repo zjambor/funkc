@@ -77,11 +77,11 @@ instance Semigroup (Prod Int) where
 -- 2 :: Double
 
 -- newtype Matrix a = Mat ((Int,Int),(Int,Int) -> a)
-newtype Concat a = Concat { getConcat :: [a] }
+{- newtype Concat a = Concat { getConcat :: [a] }
     deriving (Eq,Ord,Show)
 
 instance Semigroup (Concat [a]) where
-    (<>) (Concat [n]) (Concat [m]) = Concat ([n] ++ [m])
+    (<>) (Concat [n]) (Concat [m]) = Concat ([n] ++ [m]) -}
 
 -- superclass -> class
 class Semigroup m => Monoid m where    -- van egy egységeleme - mempty
@@ -97,9 +97,9 @@ instance Monoid (Prod Int) where
 -- listákhoz megírni semigroup monoidokat 
 -- tetszőleges típus, aminek nincs egységeleme
 
-instance Monoid (Concat [a]) where
-    mempty = Concat []
-
+{- instance Monoid (Concat [a]) where
+    mempty = Concat [] -}
+    
 instance Semigroup [a] where
     (<>) = (++)
     

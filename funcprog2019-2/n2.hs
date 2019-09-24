@@ -30,10 +30,11 @@ data Void
 
 data Exp a b = Fun (a -> b)
 
+-- teszt 1:
+
 data List a = Nil | Cons a (List a)
     deriving (Eq,Ord,Show)
 
---
 len :: List a -> Int
 len Nil = 0
 len (Cons _ xs) = 1 + len xs

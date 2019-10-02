@@ -73,6 +73,9 @@ instance Functor Maybe where
 
 --instance Functor (Fun a) where
 --    fmap f (Fun g) = \x -> Fun ((f . g) x)
+instance Functor (Fun x) where 
+    fmap :: (a -> b) -> (Fun x a) -> (Fun x b)
+    fmap f (Fun g) = Fun (f . g)
 
 --
 -- data RoseTree a = Nil | Branch [RoseTree a]
@@ -82,3 +85,9 @@ data InfiniTree k v = Nil | Branch v (k -> InfiniTree k v)
 --type MaybeTree a = InfiniTree Nothing | Just (a)
 -- type ListTree a = InfiniTree _ _
 -- type BinTree a = InfiniTree _ _
+
+instance Functor (InfiniTree k) where 
+    fmap :: (a -> b) -> (InfiniTree k a) -> (InfiniTree k b)
+    fmap f Nil = Nil 
+    fmap f (Branch x g) = Branch (f x) (fmap (fmap f) g)
+--

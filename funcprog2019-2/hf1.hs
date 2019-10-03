@@ -112,8 +112,8 @@ tr2 = Bin (Suc Zero) (Leaf (Suc Zero)) (Bin (Suc Zero) (Leaf (Suc Zero)) (Leaf (
 maptr2 = mapTree plus1 plus1 tr2
 -- = Bin (Suc (Suc Zero)) (Leaf (Suc (Suc Zero))) (Bin (Suc (Suc Zero)) (Leaf (Suc (Suc Zero))) (Leaf (Suc (Suc Zero))))
 
-maptr3 = mapTree (+ (Suc (Suc Zero))) (* (Suc (Suc Zero))) tr2
-maptr4 = mapTree (`addNat` (Suc (Suc Zero))) (`mulNat` (Suc (Suc Zero))) tr2
+maptr3 = mapTree (* (Suc (Suc Zero))) (+ (Suc (Suc Zero))) tr2
+maptr4 = mapTree (`mulNat` (Suc (Suc Zero))) (`addNat` (Suc (Suc Zero))) tr2
 maptr5 = mapTree (length) (* 2) (Bin 2 (Leaf "Haskell") (Bin 1 (Leaf "is") (Leaf "great!")))
    == (Bin 4 (Leaf 7) (Bin 2 (Leaf 2) (Leaf 6)))
 

@@ -22,5 +22,5 @@ instance Functor (Cont r) where
     fmap f (Cont g) = Cont (\k -> g (k . f))
 --
 instance Functor (F2 x) where
-    fmap f (F2 g) = F2 (\k -> f (k . g))
+    fmap f (F2 g) = F2 (\k -> g (f . k))
 --

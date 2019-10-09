@@ -17,10 +17,11 @@ instance Functor (F1 x) where
     fmap f (F1 g) = F1 (f . g)
 --
 
-newtype Cont r a = Cont ((a -> r) -> r)
+{- newtype Cont r a = Cont ((a -> r) -> r)
 instance Functor (Cont r) where
-    fmap f (Cont g) = Cont (\k -> g (k . f))
+    fmap f (Cont g) = Cont (\k -> g (k . f)) -}
 --
+
 instance Functor (F2 x) where
-    fmap f (F2 g) = F2 (\k -> g (f . k))
+    fmap f (F2 g) = F2 (\k -> g (k . f))
 --

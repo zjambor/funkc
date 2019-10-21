@@ -1,0 +1,235 @@
+melindatoth@Melindas-MacBook-Pro fp2_osz % erl
+Erlang/OTP 20 [erts-9.0] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Hello Melinda
+Eshell V9.0  (abort with ^G)
+1> erlang:system_info(available_processors).
+** exception error: bad argument
+     in function  erlang:system_info/1
+        called as erlang:system_info(available_processors)
+2> erlang:system_info(processors_available).
+** exception error: bad argument
+     in function  erlang:system_info/1
+        called as erlang:system_info(processors_available)
+3> erlang:system_info(logical_processors).          
+4
+4> c(taskfarm).
+{ok,taskfarm}
+5> taskfarm:run(fun(X) -> X +1 end, [3,4,5]).
+<0.73.0>
+6> Coll = v(5).
+<0.73.0>
+7> Coll ! {give_me, self()}.
+{give_me,<0.64.0>}
+8> flush().
+Shell got {subresults,[{5,6},{4,5},{3,4}]}
+ok
+9> processes().             
+[<0.0.0>,<0.1.0>,<0.2.0>,<0.3.0>,<0.6.0>,<0.32.0>,<0.33.0>,
+ <0.35.0>,<0.36.0>,<0.37.0>,<0.38.0>,<0.40.0>,<0.41.0>,
+ <0.42.0>,<0.43.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,
+ <0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,
+ <0.54.0>,<0.55.0>,<0.59.0>,<0.64.0>|...]
+10> self().
+<0.64.0>
+11> erlang:display(processes()).
+[<0.0.0>,<0.1.0>,<0.2.0>,<0.3.0>,<0.6.0>,<0.32.0>,<0.33.0>,<0.35.0>,<0.36.0>,<0.37.0>,<0.38.0>,<0.40.0>,<0.41.0>,<0.42.0>,<0.43.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.59.0>,<0.64.0>,<0.72.0>,<0.73.0>,<0.74.0>,<0.75.0>,<0.76.0>,<0.77.0>,<0.78.0>,<0.79.0>,<0.80.0>,<0.81.0>]
+true
+12> io:format("~p", [processes()]).
+[<0.0.0>,<0.1.0>,<0.2.0>,<0.3.0>,<0.6.0>,<0.32.0>,<0.33.0>,<0.35.0>,<0.36.0>,
+ <0.37.0>,<0.38.0>,<0.40.0>,<0.41.0>,<0.42.0>,<0.43.0>,<0.44.0>,<0.45.0>,
+ <0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,
+ <0.54.0>,<0.55.0>,<0.59.0>,<0.64.0>,<0.72.0>,<0.73.0>,<0.74.0>,<0.75.0>,
+ <0.76.0>,<0.77.0>,<0.78.0>,<0.79.0>,<0.80.0>,<0.81.0>]ok
+13> observer:start().
+ok
+14> exit(<0.72.0>).
+** exception exit: <0.72.0>
+15> io:format("~p", [processes()]).
+[<0.0.0>,<0.1.0>,<0.2.0>,<0.3.0>,<0.6.0>,<0.32.0>,<0.33.0>,<0.35.0>,<0.36.0>,
+ <0.37.0>,<0.38.0>,<0.40.0>,<0.41.0>,<0.42.0>,<0.43.0>,<0.44.0>,<0.45.0>,
+ <0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,
+ <0.54.0>,<0.55.0>,<0.59.0>,<0.72.0>,<0.73.0>,<0.74.0>,<0.75.0>,<0.76.0>,
+ <0.77.0>,<0.78.0>,<0.79.0>,<0.80.0>,<0.81.0>,<0.90.0>,<0.91.0>,<0.92.0>,
+ <0.93.0>,<0.95.0>,<0.96.0>,<0.97.0>,<0.101.0>,<0.102.0>,<0.104.0>,<0.105.0>,
+ <0.107.0>,<0.108.0>,<0.109.0>,<0.12538.0>]ok
+16> exit(<0.72.0>, kill).          
+true
+17> io:format("~p", [processes()]).
+[<0.0.0>,<0.1.0>,<0.2.0>,<0.3.0>,<0.6.0>,<0.32.0>,<0.33.0>,<0.35.0>,<0.36.0>,
+ <0.37.0>,<0.38.0>,<0.40.0>,<0.41.0>,<0.42.0>,<0.43.0>,<0.44.0>,<0.45.0>,
+ <0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,
+ <0.54.0>,<0.55.0>,<0.59.0>,<0.73.0>,<0.74.0>,<0.75.0>,<0.76.0>,<0.77.0>,
+ <0.78.0>,<0.79.0>,<0.80.0>,<0.81.0>,<0.90.0>,<0.91.0>,<0.92.0>,<0.93.0>,
+ <0.95.0>,<0.96.0>,<0.97.0>,<0.101.0>,<0.102.0>,<0.104.0>,<0.105.0>,<0.107.0>,
+ <0.108.0>,<0.109.0>,<0.12538.0>]ok
+18> [exit(<0.P.0>, kill) || P <- lists:seq(73, 81)].
+* 1: syntax error before: '<'
+18> [exit(pid(0, P, 0), kill) || P <- lists:seq(73, 81)].
+[true,true,true,true,true,true,true,true,true]
+19> c(taskfarm).
+taskfarm.erl:37: Warning: this clause cannot match because a previous clause at line 31 always matches
+{ok,taskfarm}
+20> c(taskfarm).
+{ok,taskfarm}
+21> taskfarm:run(fun(X) -> X +1 end, [3,4,5]).           
+Worker terminated: <0.19712.0>
+Worker terminated: <0.19713.0>
+Worker terminated: <0.19714.0>
+Worker terminated: <0.19715.0>
+Worker terminated: <0.19716.0>
+Dispatcher terminated
+Worker terminated: <0.19709.0>
+Worker terminated: <0.19710.0>
+Worker terminated: <0.19711.0>
+<0.19708.0>
+22> Coll = v(21).
+** exception error: no match of right hand side value <0.19708.0>
+23> f(Coll).
+ok
+24> Coll = v(21).
+<0.19708.0>
+25> Coll ! {give_me, self()}.                            
+{give_me,<0.20457.0>}
+26> flush().
+Shell got {subresults,[{5,6},{4,5},{3,4}]}
+ok
+27> Coll ! {stop, self()}.   
+Collector terminated{stop,<0.20457.0>}
+28> flush().              
+Shell got {finalresults,[{5,6},{4,5},{3,4}]}
+ok
+29> taskfarm:run(fun(X) -> X +1 end, [3,4,5, alma, {}]).
+Worker terminated: <0.23870.0>
+Worker terminated: <0.23872.0>
+Worker terminated: <0.23871.0>
+Worker terminated: <0.23865.0>
+Worker terminated: <0.23866.0>
+Worker terminated: <0.23867.0>
+<0.23864.0>
+30> 
+=ERROR REPORT==== 17-Oct-2019::17:01:48 ===
+Error in process <0.23868.0> with exit value:
+{badarith,[{erlang,'+',[alma,1],[]},
+           {taskfarm,worker,3,[{file,"taskfarm.erl"},{line,19}]}]}
+
+=ERROR REPORT==== 17-Oct-2019::17:01:48 ===
+Error in process <0.23869.0> with exit value:
+{badarith,[{erlang,'+',[{},1],[]},
+           {taskfarm,worker,3,[{file,"taskfarm.erl"},{line,19}]}]}
+
+30> f(Coll).                                            
+ok
+31> Coll = v(29).                                       
+<0.23864.0>
+32> Coll ! {give_me, self()}.                           
+{give_me,<0.20457.0>}
+33> flush().                                            
+Shell got {subresults,[{5,6},{4,5},{3,4}]}
+ok
+34> 
+34> 
+34> 
+34> spawn(fun() -> 1/0 end).
+
+=ERROR REPORT==== 17-Oct-2019::17:04:04 ===
+Error in process <0.26468.0> with exit value:
+{badarith,[{erlang,'/',[1,0],[]}]}
+<0.26468.0>
+35> self().                  
+<0.20457.0>
+36> spawn(fun() -> 1/0 end).
+
+=ERROR REPORT==== 17-Oct-2019::17:04:21 ===
+Error in process <0.26851.0> with exit value:
+{badarith,[{erlang,'/',[1,0],[]}]}
+<0.26851.0>
+37> self().                 
+<0.20457.0>
+38> spawn_link(fun() -> 1/0 end).
+
+=ERROR REPORT==== 17-Oct-2019::17:05:34 ===
+Error in process <0.28142.0> with exit value:
+{badarith,[{erlang,'/',[1,0],[]}]}
+** exception exit: badarith
+     in operator  '/'/2
+        called as 1 / 0
+39> self().                      
+<0.28143.0>
+40> process_flag(trap_exit, true).
+false
+41> process_flag(trap_exit, true).
+true
+42> spawn_link(fun() -> 1/0 end). 
+
+=ERROR REPORT==== 17-Oct-2019::17:09:12 ===
+Error in process <0.32202.0> with exit value:
+{badarith,[{erlang,'/',[1,0],[]}]}
+<0.32202.0>
+43> flush().
+Shell got {'EXIT',<0.32202.0>,{badarith,[{erlang,'/',[1,0],[]}]}}
+ok
+44> process_flag(trap_exit, false).
+true
+45> spawn_monitor(fun() -> 1/0 end).
+
+=ERROR REPORT==== 17-Oct-2019::17:10:42 ===
+Error in process <0.1106.1> with exit value:
+{badarith,[{erlang,'/',[1,0],[]}]}
+{<0.1106.1>,#Ref<0.1411545723.3471048705.33621>}
+46> flush().                        
+Shell got {'DOWN',#Ref<0.1411545723.3471048705.33621>,process,<0.1106.1>,
+                  {badarith,[{erlang,'/',[1,0],[]}]}}
+ok
+47> spawn_monitor(fun() -> 1/1 end).
+{<0.3685.1>,#Ref<0.1411545723.3471048705.41350>}
+48> PID = spawn(fun() -> receive after 10000 -> ok end end).
+<0.9733.1>
+49> monitor(PID, process).
+** exception error: bad argument
+     in function  monitor/2
+        called as monitor(<0.9733.1>,process)
+50> monitor(process, PID).         
+#Ref<0.1411545723.3471048705.61162>
+51> flush().
+Shell got {'DOWN',#Ref<0.1411545723.3471048705.61162>,process,<0.9733.1>,
+                  noproc}
+ok
+52> f(PID).               
+ok
+53> PID = spawn(fun() -> receive after 5000 -> ok end end). 
+<0.11788.1>
+54> monitor(process, PID).                                 
+#Ref<0.1411545723.3471048705.66203>
+55> flush().                                               
+Shell got {'DOWN',#Ref<0.1411545723.3471048705.66203>,process,<0.11788.1>,
+                  normal}
+ok
+56> c(taskfarm).
+taskfarm.erl:59: Warning: variable 'Refs' is unused
+taskfarm.erl:64: Warning: variable 'Pid' is unused
+taskfarm.erl:64: Warning: variable 'Ref' is unused
+{ok,taskfarm}
+57> f(Coll).              
+ok
+58> Coll = taskfarm:run(fun(X) -> X +1 end, [3,4,5, alma, {}]).
+Worker terminated: <0.19885.1>
+Worker terminated: <0.19886.1>
+Worker terminated: <0.19887.1>
+
+=ERROR REPORT==== 17-Oct-2019::17:27:47 ===
+Error in process <0.19883.1> with exit value:
+{badarith,[{erlang,'+',[alma,1],[]},
+           {taskfarm,worker,3,[{file,"taskfarm.erl"},{line,20}]}]}
+Worker terminated: <0.19880.1>
+Worker terminated: <0.19881.1>
+Worker terminated: <0.19882.1>
+Dispatcher terminated
+Worker terminated: <0.19889.1>
+Worker terminated: <0.19890.1>
+<0.19879.1>
+
+=ERROR REPORT==== 17-Oct-2019::17:27:47 ===
+Error in process <0.19884.1> with exit value:
+{badarith,[{erlang,'+',[{},1],[]},
+           {taskfarm,worker,3,[{file,"taskfarm.erl"},{line,20}]}]}

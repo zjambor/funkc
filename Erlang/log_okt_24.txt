@@ -1,0 +1,466 @@
+cd Last login: Tue Oct 22 21:28:43 on ttys005
+melindatoth@Melindas-MacBook-Pro ~ % cd Desktop/fp2_osz 
+melindatoth@Melindas-MacBook-Pro fp2_osz % erl
+Erlang/OTP 20 [erts-9.0] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Hello Melinda
+Eshell V9.0  (abort with ^G)
+1> self() ! {'DOWN', make_ref(), process, <0.12.0>, {badmatch, 2, []}}.
+{'DOWN',#Ref<0.879262874.3152019457.87989>,process,<0.12.0>,
+        {badmatch,2,[]}}
+2> flush().
+Shell got {'DOWN',#Ref<0.879262874.3152019457.87989>,process,<0.12.0>,
+                  {badmatch,2,[]}}
+ok
+3> make_ref().
+#Ref<0.879262874.3152019457.88009>
+4> spawn_monitor(fun() -> 1 end).
+{<0.65.0>,#Ref<0.879262874.3152019457.88014>}
+5> c(taskfarm2).
+{ok,taskfarm2}
+6> taskfarm2:
+module_info/0  module_info/1  run/2          
+6> taskfarm2:run(fun(X) -> X+1 end, [2,3,alma]). 
+Worker terminated: <0.77.0>
+Worker terminated: <0.78.0>
+Worker terminated: <0.79.0>
+Worker terminated: <0.80.0>
+Worker terminated: <0.81.0>
+Process terminated and restarted:<0.76.0>
+ Worker terminated: <0.74.0>
+Worker terminated: <0.75.0>
+<0.73.0>
+Dispatcher terminated
+Worker terminated: <0.83.0>
+7> 
+7> 
+=ERROR REPORT==== 24-Oct-2019::16:19:28 ===
+Error in process <0.76.0> with exit value:
+{badarith,[{erlang,'+',[alma,1],[]},
+           {taskfarm2,worker,3,[{file,"taskfarm2.erl"},{line,20}]}]}
+
+7> c(taskfarm2).                                 
+{ok,taskfarm2}
+8> taskfarm2:run(fun(X) -> X+1 end, [2,3,alma]). 
+Worker terminated: <0.95.0>
+Worker terminated: <0.96.0>
+Worker terminated: <0.97.0>
+Worker terminated: <0.98.0>
+Worker terminated: <0.99.0>
+
+=ERROR REPORT==== 24-Oct-2019::16:20:28 ===
+Error in process <0.94.0> with exit value:
+{badarith,[{erlang,'+',[alma,1],[]},
+           {taskfarm2,worker,3,[{file,"taskfarm2.erl"},{line,20}]}]}
+Worker terminated: <0.92.0>
+Worker terminated: <0.93.0>
+Process terminated and restarted:{<0.94.0>,<0.101.0>}
+ Dispatcher terminated
+Worker terminated: <0.101.0>
+<0.91.0>
+9> 
+9> c(taskfarm3).                                 
+taskfarm3.erl:12: Warning: variable 'WPids' is unused
+taskfarm3.erl:58: Warning: function supervise/2 is unused
+taskfarm3.erl:62: Warning: function sup/2 is unused
+{ok,taskfarm3}
+10> taskfarm2:run(fun(X) -> X+1 end, [2,3,4]).    
+Worker terminated: <0.113.0>
+Worker terminated: <0.114.0>
+Worker terminated: <0.115.0>
+Worker terminated: <0.117.0>
+Worker terminated: <0.116.0>
+Dispatcher terminated
+Worker terminated: <0.110.0>
+Worker terminated: <0.111.0>
+Worker terminated: <0.112.0>
+<0.109.0>
+11> 
+11> <0.109.0> ! {stop, self()}.
+Collector terminated{stop,<0.60.0>}
+12> flush().
+Shell got {'DOWN',#Ref<0.879262874.3152019457.88014>,process,<0.65.0>,normal}
+Shell got {finalresults,[{4,5},{3,4},{2,3}]}
+ok
+13> taskfarm2:run(fun(X) -> X+1 end, [2,3,4, alma]). 
+Worker terminated: <0.128.0>
+Worker terminated: <0.129.0>
+Worker terminated: <0.130.0>
+Worker terminated: <0.131.0>
+Worker terminated: <0.124.0>
+Worker terminated: <0.125.0>
+Worker terminated: <0.126.0>
+Process terminated and restarted:{<0.127.0>,<0.133.0>}
+ 
+=ERROR REPORT==== 24-Oct-2019::16:25:11 ===
+Error in process <0.127.0> with exit value:
+{badarith,[{erlang,'+',[alma,1],[]},
+           {taskfarm2,worker,3,[{file,"taskfarm2.erl"},{line,20}]}]}
+Dispatcher terminated
+Worker terminated: <0.133.0>
+<0.123.0>
+14> 
+14> <0.123.0> ! {stop, self()}.                      
+Collector terminated{stop,<0.60.0>}
+15> flush().                                         
+Shell got {finalresults,[{4,5},{3,4},{2,3}]}
+ok
+16> taskfarm3:run(fun(X) -> X+1 end, [2,3,4, alma]). 
+Worker terminated: <0.143.0>
+Worker terminated: <0.144.0>
+Worker terminated: <0.145.0>
+Worker terminated: <0.146.0>
+Dispatcher terminated
+Worker terminated: <0.139.0>
+Worker terminated: <0.140.0>
+Worker terminated: <0.141.0>
+Worker terminated: <0.142.0>
+<0.138.0>
+17> 
+17> <0.138.0> ! {stop, self()}.                      
+Collector terminated{stop,<0.60.0>}
+18> flush().
+Shell got {finalresults,
+              [{alma,
+                   {'EXIT',
+                       {badarith,
+                           [{erlang,'+',[alma,1],[]},
+                            {taskfarm3,worker,3,
+                                [{file,"taskfarm3.erl"},{line,20}]}]}}},
+               {4,5},
+               {3,4},
+               {2,3}]}
+ok
+19> catch 1+1.  
+2
+20> catch alma+1.
+{'EXIT',{badarith,[{erlang,'+',[alma,1],[]},
+                   {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                   {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                   {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                   {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                   {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+21> catch lists:mapp(1,2).
+{'EXIT',{undef,[{lists,mapp,[1,2],[]},
+                {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+22> catch lists:mapp(1,2).
+{'EXIT',{undef,[{lists,mapp,[1,2],[]},
+                {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+23> catch lists:max(12).
+{'EXIT',{function_clause,[{lists,max,"\f",
+                                 [{file,"lists.erl"},{line,328}]},
+                          {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+24> catch lists:map(1,[2,3]).
+{'EXIT',{{badfun,1},
+         [{lists,map,2,[{file,"lists.erl"},{line,1239}]},
+          {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+25> catch lists:map(fun(X) -> X end, 2).   
+{'EXIT',{function_clause,[{lists,map,
+                                 [#Fun<erl_eval.6.99386804>,2],
+                                 [{file,"lists.erl"},{line,1238}]},
+                          {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+26> catch lists:max([]).                
+{'EXIT',{function_clause,[{lists,max,
+                                 [[]],
+                                 [{file,"lists.erl"},{line,328}]},
+                          {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+27> X = 2.              
+2
+28> catch X = 3.
+{'EXIT',{{badmatch,3},[{erl_eval,expr,3,[]}]}}
+29> catch length(2).    
+{'EXIT',{badarg,[{erlang,length,[2],[]},
+                 {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                 {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                 {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                 {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                 {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+30> catch lists:map(1,[2,3]).           
+{'EXIT',{{badfun,1},
+         [{lists,map,2,[{file,"lists.erl"},{line,1239}]},
+          {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+31> catch X(12).             
+{'EXIT',{{badfun,2},
+         [{shell,apply_fun,3,[{file,"shell.erl"},{line,902}]},
+          {erl_eval,do_apply,5,[{file,"erl_eval.erl"},{line,661}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+32> F = fun() -> ok end.      
+#Fun<erl_eval.20.99386804>
+33> catch F().
+ok
+34> catch F(2,3).
+{'EXIT',{{badarity,{#Fun<erl_eval.20.99386804>,[2,3]}},
+         [{erl_eval,expr,3,[]}]}}
+35> Map = #{key1 => 2, key2 => 3}.
+#{key1 => 2,key2 => 3}
+36> Map#{key1=> 12}
+36> .
+#{key1 => 12,key2 => 3}
+37> X#{key1=> 12}  
+37> .
+** exception error: {badmap,2}
+     in function  maps:put/3
+        called as maps:put(k,v,2)
+38> catch X#{key1=> 12}
+38> .
+{'EXIT',{{badmap,2},
+         [{maps,put,[k,v,2],[]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,251}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+39> Map#{key3=> 12}    
+39> .
+#{key1 => 2,key2 => 3,key3 => 12}
+40> catch Map#{key1:= 12}.
+#{key1 => 12,key2 => 3}
+41> catch Map#{key3:= 12}.
+{'EXIT',{{badkey,key3},
+         [{maps,update,[key3,12,#{key1 => 2,key2 => 3}],[]},
+          {erl_eval,'-expr/5-fun-0-',2,
+                    [{file,"erl_eval.erl"},{line,255}]},
+          {lists,foldl,3,[{file,"lists.erl"},{line,1263}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,252}]},
+          {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+          {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+          {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+          {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+42> c(parmap).            
+parmap.erl:2: Warning: export_all flag enabled - all functions will be exported
+parmap.erl:10: Warning: variable 'Acc2' is unused
+parmap.erl:12: Warning: variable 'Acc1' is unused
+{ok,parmap}
+43> parmap:call([]).
+** exception error: an error occurred when evaluating an arithmetic expression
+     in function  parmap:'-call/1-fun-0-'/1 (parmap.erl, line 45)
+     in call from lists:map/2 (lists.erl, line 1239)
+     in call from parmap:call/1 (parmap.erl, line 45)
+44> c(taskfarm3).         
+taskfarm3.erl:12: Warning: variable 'WPids' is unused
+taskfarm3.erl:62: Warning: function supervise/2 is unused
+taskfarm3.erl:66: Warning: function sup/2 is unused
+{ok,taskfarm3}
+45> taskfarm3:run(fun(X) -> {'EXIT', X+1} end, [2,3,4, alma]). 
+Worker terminated: <0.193.0>
+Worker terminated: <0.194.0>
+Worker terminated: <0.195.0>
+Worker terminated: <0.192.0>
+Dispatcher terminated
+Worker terminated: <0.188.0>
+Worker terminated: <0.189.0>
+Worker terminated: <0.190.0>
+Worker terminated: <0.191.0>
+<0.187.0>
+46> 
+46> <0.187.0> ! {stop, self()} .                               
+Collector terminated{stop,<0.179.0>}
+47> flush().
+Shell got {finalresults,[]}
+ok
+48> c(taskfarm3).                                              
+taskfarm3.erl:12: Warning: variable 'WPids' is unused
+taskfarm3.erl:67: Warning: function supervise/2 is unused
+taskfarm3.erl:71: Warning: function sup/2 is unused
+{ok,taskfarm3}
+49> taskfarm3:run(fun(X) -> {'EXIT', X+1} end, [2,3,4, alma]). 
+Worker terminated: <0.210.0>
+Worker terminated: <0.211.0>
+Worker terminated: <0.212.0>
+Worker terminated: <0.213.0>
+Error in execution: {error,badarith}Worker terminated: <0.206.0>
+Worker terminated: <0.207.0>
+Worker terminated: <0.208.0>
+<0.205.0>
+Dispatcher terminated
+Worker terminated: <0.209.0>
+50> 
+50> <0.205.0> ! {stop, self()} .                               
+Collector terminated{stop,<0.179.0>}
+51> flush().
+Shell got {finalresults,[{4,{'EXIT',5}},{3,{'EXIT',4}},{2,{'EXIT',3}}]}
+ok
+52> taskfarm3:run(fun(X) -> X+1 end, [2,3,4, alma]).           
+Worker terminated: <0.223.0>
+Error in execution: {error,badarith}Worker terminated: <0.224.0>
+Worker terminated: <0.225.0>
+Worker terminated: <0.226.0>
+Worker terminated: <0.220.0>
+Worker terminated: <0.219.0>
+Worker terminated: <0.221.0>
+<0.218.0>
+Dispatcher terminated
+Worker terminated: <0.222.0>
+53> 
+53> <0.218.0> ! {stop, self()} .                     
+Collector terminated{stop,<0.179.0>}
+54> flush().                    
+Shell got {finalresults,[{3,4},{4,5},{2,3}]}
+ok
+55> io:read("-> ").
+-> alma.
+{ok,alma}
+56> io:read("-> ").
+-> f-
+-> .
+{error,{2,erl_parse,["syntax error before: ","'.'"]}}
+57> io:get_line("-> ").
+-> alma
+"alma\n"
+58> c(eval).
+eval.erl:10: variable 'Fun' unsafe in 'try' (line 5)
+eval.erl:10: variable 'Mod' unsafe in 'try' (line 5)
+eval.erl:10: variable 'Par' unsafe in 'try' (line 5)
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+error
+59> c(eval).
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+{ok,eval}
+60> eval:run().
+Module name: lists.
+Function name: max.
+Parameter 1: [2,3,4].
+4
+61> c(eval).   
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+{ok,eval}
+62> eval:run().
+Module name: lists.
+Function name: max.
+Parameter 1: [3].
+3
+63> eval:module_info().
+[{module,eval},
+ {exports,[{run,0},{module_info,0},{module_info,1}]},
+ {attributes,[{vsn,[11703705762436600419272477247134505185]}]},
+ {compile,[{options,[]},
+           {version,"7.1"},
+           {source,"/Users/melindatoth/Desktop/fp2_osz/eval.erl"}]},
+ {native,false},
+ {md5,<<8,206,13,62,193,80,180,249,113,81,26,170,152,128,
+        24,225>>}]
+64> eval:module_info(exports).
+[{run,0},{module_info,0},{module_info,1}]
+65> evallllll:module_info(exports).
+** exception error: undefined function evallllll:module_info/1
+66> catch evallllll:module_info(exports).
+{'EXIT',{undef,[{evallllll,module_info,[exports],[]},
+                {erl_eval,do_apply,6,[{file,"erl_eval.erl"},{line,674}]},
+                {erl_eval,expr,5,[{file,"erl_eval.erl"},{line,431}]},
+                {shell,exprs,7,[{file,"shell.erl"},{line,687}]},
+                {shell,eval_exprs,7,[{file,"shell.erl"},{line,642}]},
+                {shell,eval_loop,3,[{file,"shell.erl"},{line,627}]}]}}
+67> eval:module_info(exports).           
+[{run,0},{module_info,0},{module_info,1}]
+68> lists:keyfind(run, eval:module_info(exports)).
+** exception error: undefined function lists:keyfind/2
+69> lists:keyfind(run, 1, eval:module_info(exports)).
+{run,0}
+70> lists:keyfind(ruhhhhn, 1, eval:module_info(exports)).
+false
+71> {la, X} = false.
+** exception error: no match of right hand side value false
+72> catch {la, X} = false.                               
+{'EXIT',{{badmatch,false},[{erl_eval,expr,3,[]}]}}
+73> eval:run().           
+Module name: 1+2.
+{badmatch,{error,{1,erl_parse,"bad term"}}}
+74> c(eval).
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+eval.erl:9: Warning: variable 'Arity' is unused
+{ok,eval}
+75> eval:run().
+Module name: 1+2.
+** exception error: no match of right hand side value {error,
+                                                       {1,erl_parse,"bad term"}}
+     in function  eval:run/0 (eval.erl, line 6)
+76> c(eval).   
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+eval.erl:9: Warning: variable 'Arity' is unused
+{ok,eval}
+77> eval:run().
+Module name: 1+2.
+"Input is not an Erlang term"
+78> eval:run().
+Module name: alma.
+"Module douse not exist"
+79> eval:run().
+Module name: lists.
+Function name: ppp.
+"Function does not exported"
+80> eval:run().
+Module name: lists.
+Function name: 1+2.
+"Input is not an Erlang term"
+81> eval:run().
+Module name: 1.
+** exception error: bad argument
+     in function  apply/3
+        called as apply(1,module_info,[])
+     in call from eval:run/0 (eval.erl, line 7)
+82> c(eval).   
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+eval.erl:9: Warning: variable 'Arity' is unused
+{ok,eval}
+83> eval:run().
+Module name: 1.
+** exception error: bad argument
+     in function  apply/3
+        called as apply(1,module_info,[])
+     in call from eval:run/0 (eval.erl, line 7)
+84> c(eval).   
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+eval.erl:9: Warning: variable 'Arity' is unused
+{ok,eval}
+85> eval:run().
+Module name: 1.
+"Module name is not an atom"
+86> c(eval).   
+eval.erl:10: syntax error before: '||'
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+error
+87> c(eval).
+eval.erl:14: variable 'Par' is unbound
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+error
+88> c(eval).
+eval.erl:2: Warning: export_all flag enabled - all functions will be exported
+{ok,eval}
+89> eval:run().
+Module name: lists.
+Function name: nth.
+Parameter 1: 2.
+Parameter 1: [4,5,6].
+5
+90> 

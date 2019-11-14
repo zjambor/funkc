@@ -1,0 +1,2 @@
+-define(SRV, chatserver).
+-record(state, {clients = [], max=0, note}).

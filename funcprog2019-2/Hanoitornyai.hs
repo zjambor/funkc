@@ -68,42 +68,31 @@ movecb (x, y, []) = (x, y, [])
 movecb (x, y, (z:zs)) = (x, (z:y), zs)
 
 move :: RodID -> RodID -> Problem -> Problem
-move a b (x,y,z) =
-    case a of
-        A -> case b of
-            B -> moveab (x,y,z)
-            C -> moveac (x,y,z)
-        B -> case b of
-            A -> moveba (x,y,z)
-            C -> movebc (x,y,z)
-        C -> case b of
-            A -> moveca (x,y,z)
-            _ -> movecb (x,y,z)
+move a b (x,y,z) 
+    | a == b = (x,y,z)
+    | otherwise =
+        case a of
+            A -> case b of
+                B -> moveab (x,y,z)
+                C -> moveac (x,y,z)
+            B -> case b of
+                A -> moveba (x,y,z)
+                C -> movebc (x,y,z)
+            C -> case b of
+                A -> moveca (x,y,z)
+                _ -> movecb (x,y,z)
 
 executeMove :: Move -> Problem -> Problem
 executeMove (a,b) (x,y,z) = move a b (x,y,z)
 
 -- executeMove (A,C) (initial 5)
 executeMoves :: [Move] -> Problem -> Problem
---executeMoves [] p = p
+executeMoves [] p = p
 executeMoves (x:xs) p = do
     let c = executeMove x p
-    return c  -- (executeMoves xs c)    -- let c' =
-    --return c'
+    executeMoves xs c
 
 --executeMoves [(A,C),(C,B)] (initial 5)
-
-applyMany :: [a -> b] -> a -> [b]
-applyMany fs a = map (\f -> f a) fs
-
-composeAll :: [a -> a] -> a -> a
-composeAll = foldr (.) id
---composeAll [f, g, h] x = f (g (h x))
-
-paratlan = composeAll [(`mod` 2),(`mod` 3)] 6 == 1
---composeAll [(`mod` 2),(`mod` 3)] 6
--- composeAll [(`mod` 5),(`mod` 6),(+ 4),(* 2)] 11
-fy x = foldr (.) id [(+2), (*7)] x
 
 igaz_e = [(((+) <$> Just 3 <*> Just 3) == (Just (+3) <*> Just 3)), (((+) <$> Just 3 <*> Just 3) == (\x -> Just (x+3)) 3 )]
 
@@ -111,4 +100,5 @@ igaz_e = [(((+) <$> Just 3 <*> Just 3) == (Just (+3) <*> Just 3)), (((+) <$> Jus
 yep = ( Just 3 >>= \x -> return (x+3) ) == ( (\x -> Just (x+3)) 3 )
 
 main = --executeMove (A,C) (initial 5) --
-    executeMove <$> [(A,C),(C,B)] <*> [(initial 5)]
+    [ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
+    [ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]

@@ -1,0 +1,133 @@
+Last login: Wed Nov  6 22:41:51 on console
+melindatoth@Melindas-MacBook-Pro ~ % cd Desktop/fp2_osz 
+melindatoth@Melindas-MacBook-Pro fp2_osz % ls
+eval.beam		ret.beam		taskfarm.erl
+eval.erl		ret.erl			taskfarm2.beam
+first.beam		ring.beam		taskfarm2.erl
+first.erl		ring.erl		taskfarm3.beam
+first_log.txt		ring_log.txt		taskfarm3.erl
+log3.txt		ring_old.erl		taskfarm_log.txt
+log_okt_24.txt		second.beam		third.beam
+parmap.beam		second.erl		third.erl
+parmap.erl		second_log.txt		third_log.txt
+parmap_log.txt		taskfarm.beam
+melindatoth@Melindas-MacBook-Pro fp2_osz % erl
+Erlang/OTP 20 [erts-9.0] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:10] [hipe] [kernel-poll:false] [dtrace]
+
+Hello Melinda
+Eshell V9.0  (abort with ^G)
+1> register(alma, self()).
+true
+2> alma ! szia.
+szia
+3> flush().
+Shell got szia
+ok
+4> register(alma2, self()).
+** exception error: bad argument
+     in function  register/2
+        called as register(alma2,<0.60.0>)
+5> register(alma3, self()).
+true
+6> register(alma2, self()).
+** exception error: bad argument
+     in function  register/2
+        called as register(alma2,<0.65.0>)
+7> whereis(alma3).
+undefined
+8> self().
+<0.68.0>
+9> register(alma2, self()).
+true
+10> alma2 ! llll.
+llll
+11> flush().
+Shell got llll
+ok
+12> <0.234.0> ! ok.
+ok
+13> alma12 ! ok.   
+** exception error: bad argument
+     in operator  !/2
+        called as alma12 ! ok
+14> c(chatsrv).
+chatsrv.erl:11: Warning: function init/1 is unused
+chatsrv.erl:12: Warning: variable 'State' is unused
+{ok,chatsrv}
+15> c(chatsrv).
+chatsrv.erl:14: Warning: variable 'State' is unused
+{ok,chatsrv}
+16> chatsrv:init(12).
+{state,[],12,undefined}
+17> rr(chatsrv).
+[state]
+18> chatsrv:init(12).
+#state{users = [],max = 12,note = undefined}
+19> rr(chatsrv).     
+[state]
+20> c(chatsrv).      
+chatsrv.erl:23: function terminiate/1 undefined
+chatsrv.erl:29: Warning: function terminate/1 is unused
+error
+21> c(chatsrv).
+{ok,chatsrv}
+22> lists:key
+keydelete/3   keyfind/3     keymap/3      keymember/3   keymerge/3    
+keyreplace/4  keysearch/3   keysort/2     keystore/4    keytake/3     
+
+22> c(chatsrv).
+chatsrv.erl:32: variable 'NewMsg' is unbound
+chatsrv.erl:23: Warning: variable 'Nick' is unused
+chatsrv.erl:29: Warning: variable 'Msg' is unused
+chatsrv.erl:29: Warning: variable 'Pid' is unused
+chatsrv.erl:31: Warning: variable 'Pid' shadowed in 'fun'
+error
+23> c(chatsrv).
+chatsrv.erl:23: Warning: variable 'Nick' is unused
+chatsrv.erl:32: Warning: variable 'Pid' shadowed in 'fun'
+{ok,chatsrv}
+24> c(chatiface).
+{ok,chatiface}
+25> chatsrv:start(12).
+Server started
+true
+26> chat
+chatiface    chatsrv      
+26> chatiface:log
+login/1   logout/0  
+26> chatiface:login("Melinda").
+ok
+27> chatsrv:dump().
+State: {state,[{"Melinda",<0.76.0>}],12,undefined}
+dump
+28> chatiface:msg("Szia").
+{msg,"Szia",<0.76.0>}
+29> flush().              
+Shell got {text,"Melinda: Szia"}
+ok
+30> chatiface:msg("Szia").
+{msg,"Szia",<0.76.0>}
+31> chatiface:msg("Szia    dfsf ").
+{msg,"Szia    dfsf ",<0.76.0>}
+32> flush().                       
+Shell got {text,"Melinda: Szia"}
+Shell got {text,"Melinda: Szia    dfsf "}
+ok
+33> chatiface:logout().            
+{logout,<0.76.0>}
+34> chatsrv:dump().                
+State: {state,[],12,undefined}
+dump
+35> rr(chatsrv).
+[state]
+36> chatsrv:dump().
+State: {state,[],12,undefined}
+dump
+37> chat
+chatiface    chatsrv      
+37> chatsrv:stop().
+Server terminated. State: {state,[],12,undefined}
+stop
+38> chatsrv:dump().
+** exception error: bad argument
+     in function  chatsrv:dump/0 (chatsrv.erl, line 50)

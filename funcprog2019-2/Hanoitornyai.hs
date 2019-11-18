@@ -2,6 +2,7 @@
 module Hanoitornyai where
 
 import Control.Monad.Writer
+--import Data.List
 
 -- Disks of different sizes
 type Disk = Int
@@ -15,15 +16,6 @@ data RodID = A | B | C
 -- Move the topmost disk from one rod to another
 type Move = (RodID, RodID)
 
-instance Enum RodID where
-   toEnum 0 = A
-   toEnum 1 = B
-   toEnum 2 = C
-
-   fromEnum A = 0
-   fromEnum B = 1
-   fromEnum C = 2 
-
 initial :: Int -> Problem
 initial n = ([1..n],[],[])
 
@@ -34,14 +26,6 @@ validateRod (x:y:xs) = x < y && validateRod (y:xs)
 
 validateProblem :: Problem -> Bool
 validateProblem (x, y, z) = (validateRod x) && (validateRod y) && (validateRod z)
-
-{- move :: [Int] -> Column -> Column -> Column -> Writer String ()
-move [] _ _ _ = return ()  -- nothing to move.
- 
-move (largest:rest) src dst tmp = do
-  move rest src tmp dst    -- move the top blocks from src to tmp using dest as temp
-  tell $ "move " ++ show largest ++ " from " ++ show src ++ " to " ++ show dst ++ "\n"  -- move the largest one from src to dst
-  move rest tmp dst src     -- move the tmp ones back onto the largest one on dst using src as temp -}
 
 moveab :: Problem -> Problem
 moveab ([], y, z) = ([], y, z)
@@ -85,20 +69,55 @@ move a b (x,y,z)
 executeMove :: Move -> Problem -> Problem
 executeMove (a,b) (x,y,z) = move a b (x,y,z)
 
--- executeMove (A,C) (initial 5)
 executeMoves :: [Move] -> Problem -> Problem
 executeMoves [] p = p
 executeMoves (x:xs) p = do
     let c = executeMove x p
     executeMoves xs c
 
---executeMoves [(A,C),(C,B)] (initial 5)
-
 igaz_e = [(((+) <$> Just 3 <*> Just 3) == (Just (+3) <*> Just 3)), (((+) <$> Just 3 <*> Just 3) == (\x -> Just (x+3)) 3 )]
 
 -- Maybe as Monad:
 yep = ( Just 3 >>= \x -> return (x+3) ) == ( (\x -> Just (x+3)) 3 )
 
-main = --executeMove (A,C) (initial 5) --
-    [ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
-    [ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]
+freeRod :: RodID -> RodID -> RodID
+freeRod a b 
+    | (a `elem` [A,B]) && (b `elem` [A,B]) = C
+    | (a `elem` [A,C]) && (b `elem` [A,C]) = B
+    | otherwise = A
+
+type SolverM = Writer [Move]
+
+moveM :: RodID -> RodID -> Problem -> SolverM Problem
+moveM a b p = do
+    tell [(a,b)]
+    return (move a b p)
+
+moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
+moveManyM 0 a b p = moveM a b p
+moveManyM n a b p = moveManyM' n a b c p where
+    c = freeRod a b
+    moveManyM' 0 a b c p = return ()
+    moveManyM' n a b c p = do
+        moveManyM' (n-1) a c b p
+        --putStrLn $ "Move " ++ show a ++ " to " ++ show b
+        moveManyM' (n-1) c b a p
+
+--executeMoves (hanoi n (a, b, (freeRod a b))) p
+
+hanoi :: Int -> (RodID, RodID, RodID) -> [Move]
+hanoi n (a, b, c) = hanoiToList n a b c []
+  where
+    hanoiToList 0 _ _ _ l = l
+    hanoiToList n a b c l = hanoiToList (n-1) a c b ((a, b) : hanoiToList (n-1) c b a l)
+
+solve :: Problem -> [Move]
+solve (a, b, c) = hanoi (length a) (A, B, C)
+
+main = [ executeMoves (solve (initial 8)) (initial 8)
+--moveM A B (initial 5        
+--executeMoves (hanoi 5 (A,B,C)) (initial 5) 
+        ]
+    --executeMove (A,C) (initial 5) --
+    --[ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
+    --[ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]

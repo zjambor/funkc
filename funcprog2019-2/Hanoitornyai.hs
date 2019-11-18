@@ -97,10 +97,11 @@ moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
 moveManyM 0 a b p = moveM a b p
 moveManyM n a b p = moveManyM' n a b c p where
     c = freeRod a b
-    moveManyM' 0 a b c p = return ()
+    moveManyM' 0 a b c p = moveM a b p
     moveManyM' n a b c p = do
+        let c = freeRod a b
         moveManyM' (n-1) a c b p
-        --putStrLn $ "Move " ++ show a ++ " to " ++ show b
+        moveM a b p
         moveManyM' (n-1) c b a p
 
 --executeMoves (hanoi n (a, b, (freeRod a b))) p
@@ -114,10 +115,12 @@ hanoi n (a, b, c) = hanoiToList n a b c []
 solve :: Problem -> [Move]
 solve (a, b, c) = hanoi (length a) (A, B, C)
 
-main = [ executeMoves (solve (initial 8)) (initial 8)
---moveM A B (initial 5        
---executeMoves (hanoi 5 (A,B,C)) (initial 5) 
+main = [ 
+        moveManyM 5 A B (initial 5) 
+        --, executeMoves (solve (initial 5)) (initial 5) == ([],[1,2,3,4,5],[])
+        --moveM A B (initial 5        
+        --executeMoves (hanoi 5 (A,B,C)) (initial 5) 
         ]
-    --executeMove (A,C) (initial 5) --
-    --[ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
-    --[ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]
+        --executeMove (A,C) (initial 5) --
+        --[ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
+        --[ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]

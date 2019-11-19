@@ -143,7 +143,9 @@ moveManyM n a b p = moveManyM' n a b c p where
 moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM_ Problem
 moveManyM n a b p = moveManyM' n a b c p where
     c = freeRod a b
-    moveManyM' 1 a b _ p = moveM' a b p
+    moveManyM' 0 a b _ p = do
+        tell []
+        return p
     moveManyM' n a b c p = do
         p' <- moveManyM' (n-1) a c b p
         p'' <- moveM' a b p'
@@ -156,10 +158,16 @@ hanoi n (a, b, c) = hanoiToList n a b c []
     hanoiToList n a b c l = hanoiToList (n-1) a c b ((a, b) : hanoiToList (n-1) c b a l)
 
 solve :: Problem -> [Move]
-solve (a, b, c) = hanoi (length a) (A, B, C)
+solve (a, b, c) = execWriter (moveManyM (length a) A C (a, b, c))
+--solve (a, b, c) = hanoi (length a) (A, B, C)
 
-main = --moveM' A B (initial 5)
-        moveManyM 5 A B (initial 5)
+main = [ execWriter (moveManyM 0 A C ([1, 2, 3], [], [])) == [],
+        (fst . runWriter) (moveManyM 0 A C ([1, 2, 3], [], [])) == ([1, 2, 3], [], []),
+        solve ([1], [], []) == [(A, C)],
+        solve ([1, 2, 3], [], []) == [(A, C), (A, B), (C, B), (A, C), (B, A), (B, C), (A, C)]
+        ]
+    --moveM' A B (initial 5)
+        --moveManyM 5 A B (initial 5)
         --, executeMoves (solve (initial 5)) (initial 5) == ([],[1,2,3,4,5],[])
         --moveM A B (initial 5)
         --executeMoves (hanoi 5 (A,B,C)) (initial 5) 

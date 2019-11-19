@@ -84,23 +84,19 @@ type SolverM = Writer [Move]
 
 moveM :: RodID -> RodID -> Problem -> SolverM Problem
 moveM a b p = do
-    tell [(a,b)]
+    tell [(a, b)]
     return (move a b p)
 
 moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
 moveManyM n a b p = moveManyM' n a b c p where
     c = freeRod a b
-    moveManyM' 1 a b _ p = moveM a b p
+    moveManyM' 0 _ _ _ p = do
+        tell []
+        return p
     moveManyM' n a b c p = do
         p' <- moveManyM' (n-1) a c b p
         p'' <- moveM a b p'
         moveManyM' (n-1) c b a p''
 
-hanoi :: Int -> (RodID, RodID, RodID) -> [Move]
-hanoi n (a, b, c) = hanoiToList n a b c []
-  where
-    hanoiToList 0 _ _ _ l = l
-    hanoiToList n a b c l = hanoiToList (n-1) a c b ((a, b) : hanoiToList (n-1) c b a l)
-
 solve :: Problem -> [Move]
-solve (a, b, c) = hanoi (length a) (A, B, C)
+solve (a, b, c) = execWriter (moveManyM (length a) A C (a, b, c))

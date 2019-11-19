@@ -1,5 +1,5 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
-module Hanoitornyai where
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, InstanceSigs #-}
+module HanoitornyaiBonus where
 
 import Control.Monad.Writer
 
@@ -80,11 +80,30 @@ freeRod a b
     | (a `elem` [A,C]) && (b `elem` [A,C]) = B
     | otherwise = A
 
-type SolverM = Writer [Move]
+newtype DList a = DList { getDList :: [a] -> [a] }  
+
+instance Semigroup (DList Move) where
+    (<>) = mappend
+
+instance Monoid (DList Move) where
+    mempty = DList (\xs -> [] ++ xs)
+    (DList f) `mappend` (DList g) = DList (\xs -> f (g xs))
+
+instance Show (DList Move) where  
+    show :: (DList Move) -> String
+    show d = show (fromDList d)
+
+toDList :: [Move] -> DList Move
+toDList xs = DList (xs++)
+
+fromDList :: DList Move -> [Move]
+fromDList (DList f) = f []
+
+type SolverM = Writer (DList Move)
 
 moveM :: RodID -> RodID -> Problem -> SolverM Problem
 moveM a b p = do
-    tell [(a,b)]
+    tell (toDList [(a,b)])
     return (move a b p)
 
 moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
@@ -104,3 +123,6 @@ hanoi n (a, b, c) = hanoiToList n a b c []
 
 solve :: Problem -> [Move]
 solve (a, b, c) = hanoi (length a) (A, B, C)
+
+main = moveManyM 5 A B (initial 5)
+

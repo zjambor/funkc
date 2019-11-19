@@ -1,7 +1,9 @@
-{-# LANGUAGE FlexibleInstances, FlexibleContexts #-}
-module Hanoitornyai where
+{-# LANGUAGE FlexibleInstances, FlexibleContexts, InstanceSigs #-}
+module Gyak9_hanoi where
 
 import Control.Monad.Writer
+--import Data.Semigroup
+--import Data.Monoid ((<>), mempty)
 
 -- Disks of different sizes
 type Disk = Int
@@ -74,6 +76,11 @@ executeMoves (x:xs) p = do
     let c = executeMove x p
     executeMoves xs c
 
+igaz_e = [(((+) <$> Just 3 <*> Just 3) == (Just (+3) <*> Just 3)), (((+) <$> Just 3 <*> Just 3) == (\x -> Just (x+3)) 3 )]
+
+-- Maybe as Monad:
+yep = ( Just 3 >>= \x -> return (x+3) ) == ( (\x -> Just (x+3)) 3 )
+
 freeRod :: RodID -> RodID -> RodID
 freeRod a b 
     | (a `elem` [A,B]) && (b `elem` [A,B]) = C
@@ -87,13 +94,59 @@ moveM a b p = do
     tell [(a,b)]
     return (move a b p)
 
-moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
+newtype DList a = DList { getDList :: [a] -> [a] }  
+
+-- | This lets you use a difference list of a 'Semigroup' as a 'Monoid'.
+diff :: Semigroup m => [m] -> DList m
+diff = DList . (<>)
+
+toDList :: [Move] -> DList Move
+toDList xs = DList (xs++)
+
+fromDList :: DList Move -> [Move]
+fromDList (DList f) = f []
+
+instance Semigroup (DList Move) where
+    (<>) = mappend       --(DList n) (DList k) = DList (n)
+
+instance Monoid (DList Move) where
+    mempty = DList (\xs -> [] ++ xs)
+    (DList f) `mappend` (DList g) = DList (\xs -> f (g xs))
+
+-- fromDList (toDList [(A,B)] `mappend` toDList [(C,A)])
+
+--The difference list equivalent of a list like [1,2,3] would be the function \xs -> [1,2,3] ++ xs. 
+--A normal empty list is [], whereas an empty difference list is the function \xs -> [] ++ xs. 
+
+--instance Show Move => Show (DList Move) where  
+instance Show (DList Move) where  
+    show :: (DList Move) -> String
+    show d = show (fromDList d)
+    --show (DList a) = show (fromDList (DList a))
+
+type SolverM_ = Writer (DList Move)
+
+moveM' :: RodID -> RodID -> Problem -> SolverM_ Problem
+moveM' a b p = do
+    tell (toDList [(a,b)])
+    return (move a b p)
+
+{- moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM Problem
 moveManyM n a b p = moveManyM' n a b c p where
     c = freeRod a b
     moveManyM' 1 a b _ p = moveM a b p
     moveManyM' n a b c p = do
         p' <- moveManyM' (n-1) a c b p
         p'' <- moveM a b p'
+        moveManyM' (n-1) c b a p'' -}
+
+moveManyM :: Int -> RodID -> RodID -> Problem -> SolverM_ Problem
+moveManyM n a b p = moveManyM' n a b c p where
+    c = freeRod a b
+    moveManyM' 1 a b _ p = moveM' a b p
+    moveManyM' n a b c p = do
+        p' <- moveManyM' (n-1) a c b p
+        p'' <- moveM' a b p'
         moveManyM' (n-1) c b a p''
 
 hanoi :: Int -> (RodID, RodID, RodID) -> [Move]
@@ -104,3 +157,14 @@ hanoi n (a, b, c) = hanoiToList n a b c []
 
 solve :: Problem -> [Move]
 solve (a, b, c) = hanoi (length a) (A, B, C)
+
+main = --moveM' A B (initial 5)
+        moveManyM 5 A B (initial 5)
+        --, executeMoves (solve (initial 5)) (initial 5) == ([],[1,2,3,4,5],[])
+        --moveM A B (initial 5)
+        --executeMoves (hanoi 5 (A,B,C)) (initial 5) 
+        --solve (initial 5)
+        --]
+        --executeMove (A,C) (initial 5) --
+        --[ executeMove <$> [(A,C),(C,B)] <*> [(initial 5)],
+        --[ executeMoves [(A,B),(A,C),(B,C),(A,B),(A,C),(B,C)] (initial 5) ]]

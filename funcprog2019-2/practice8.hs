@@ -1,6 +1,8 @@
 {-# LANGUAGE KindSignatures,DeriveFunctor,InstanceSigs #-}
 module Practice8 where
 
+import Data.Set
+import Control.Monad.Writer
 {- import Prelude hiding(Applicative(..))
 -- http://hackage.haskell.org/package/base-4.12.0.0/docs/Control-Applicative.html
 class Functor f -> Applicative (f :: * -> *) where
@@ -77,3 +79,19 @@ compM f g x = do
 h :: Double -> Maybe Double
 h 0 = Nothing
 h n = Just (10 / n)
+
+{- type SolverM = Writer (DList Move)
+
+moveM :: RodID -> RodID -> Problem -> SolverM Problem
+moveM a b p = do
+    tell (toDList [(a,b)])
+    return (move a b p) -}
+
+--
+uniquesM :: Ord a => [a] -> Writer (Set a) Int
+uniquesM [] = do
+    tell (fromList [])
+    return 0
+uniquesM (x:xs) = do
+    tell (fromList [x])
+    return (1 + (uniquesM xs))

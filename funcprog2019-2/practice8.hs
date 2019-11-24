@@ -57,6 +57,7 @@ sequenceMaybes ((Just x):xs) = case sequenceMaybes xs of
 fv = [sequenceMaybes [Just 5, Nothing] == Nothing,
      sequenceMaybes [Just 5, Just 1] == Just [5,1]]
 
+-- twiceM (*10) 5
 twiceM :: Monad m => m a -> m (a, a)
 twiceM m = do
     x <- m 
@@ -88,10 +89,44 @@ moveM a b p = do
     return (move a b p) -}
 
 --
+-- uniquesM :: Ord a => [a] -> Writer ([a]) Int
+-- uniquesM [] = do
+--     tell ([])
+--     return 0
+-- uniquesM (x:xs) = do
+--     result <- (uniquesM xs)
+--     tell ([x])
+--     return (1 + result)
+
+-- uniquesM [1,1,5,4,7,7]
+-- runWriter (uniquesM [1,1,5,4,7,7])
 uniquesM :: Ord a => [a] -> Writer (Set a) Int
 uniquesM [] = do
     tell (fromList [])
     return 0
 uniquesM (x:xs) = do
+    result <- (uniquesM xs)
     tell (fromList [x])
-    return (1 + (uniquesM xs))
+    return (1 + result)
+
+gcd' :: Int -> Int -> Writer [String] Int  
+gcd' a b  
+    | b == 0 = do  
+        tell ["Finished with " ++ show a]  
+        return a  
+    | otherwise = do  
+        tell [show a ++ " mod " ++ show b ++ " = " ++ show (a `mod` b)]  
+        gcd' b (a `mod` b)
+--
+
+-- times 3 (*874) 419
+times :: Monad m => Int -> m a -> m [a]
+times 0 m = 
+    return []
+times n m = do
+    result <- (times (n-1) m)
+    x <- m 
+    return (x : result)
+
+-- reduce :: Monad m => m (m a) -> m a
+-- reduce m (m) 

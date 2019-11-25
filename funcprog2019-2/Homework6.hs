@@ -1,7 +1,47 @@
+{-# LANGUAGE InstanceSigs,FlexibleContexts #-}
 module Homework6 where
 
 import Control.Monad.Writer
 import Data.Set
+
+import Control.Monad
+
+-- ************************************************************
+newtype State s a = State (s -> (a,s))
+
+instance Functor (State s) where 
+  fmap :: (a -> b) -> State s a -> State s b
+  fmap f (State g) = State $ \s -> let (x, s') = g s in (f x, s')
+    -- State $ \s -> (f (fst $ g s), snd $ g s)
+
+instance Applicative (State s) where 
+  pure  = return
+  (<*>) = ap
+
+instance Monad (State s) where 
+  return :: a -> State s a 
+  return x = State $ \s -> (x,s) 
+  
+  (>>=) :: State s a -> (a -> State s b) -> State s b 
+  (>>=) (State f) k = State $ \s -> let (x, s')   = f s  in 
+                                    let (State g) = k x  in
+                                        g s'
+
+runState :: s -> State s a -> (a,s)
+runState s (State f) = f s 
+
+evalState :: s -> State s a -> a 
+evalState s = fst . runState s 
+
+execState :: s -> State s a -> s 
+execState s = snd . runState s
+
+get :: State s s
+get = State $ \s -> (s,s)
+
+put :: s -> State s ()
+put s = State $ \_ -> ((), s)
+-- *****************************************************
 
 uniquesM :: Ord a => [a] -> Writer (Set a) Int
 uniquesM [] = do
@@ -44,6 +84,7 @@ twiceM m = do
     return (x,y)
 
 times :: Monad m => Int -> m a -> m [a]
+-- times n x = sequence (replicate n x)
 times 0 m = 
     return []
 times n m = do

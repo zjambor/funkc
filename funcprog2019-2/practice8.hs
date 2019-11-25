@@ -128,5 +128,26 @@ times n m = do
     x <- m 
     return (x : result)
 
--- reduce :: Monad m => m (m a) -> m a
--- reduce m (m) 
+-- reduce (*10) (*5) 5
+reduce' :: Monad m => m (m a) -> m a
+reduce' m = do
+    x <- m
+    y <- x
+    return y
+
+reduce :: Monad m => m (m a) -> m a
+reduce m = m >>= id
+
+bind :: Monad m => m a -> (a -> m b) -> m b
+--x >>= f = join (fmap f x)
+x `bind` f = reduce (fmap f x)
+
+monadicMap :: Monad m => (a -> m b) -> [a] -> m [b]
+monadicMap f [] = return []
+monadicMap f (x:xs) = do 
+    y <- f x
+    ys <- monadicMap f xs
+    return (y:ys)
+
+voidF :: Functor f => f a -> f ()
+voidF x = () <$ x

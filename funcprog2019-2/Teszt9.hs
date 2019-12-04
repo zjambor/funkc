@@ -1,5 +1,5 @@
 {-# LANGUAGE KindSignatures,DeriveFunctor,InstanceSigs #-}
-module Practice9 where
+module Teszt9 where
 
 import Control.Monad.Writer
 import Control.Applicative
@@ -11,9 +11,6 @@ instance Functor Parser where
     fmap f (P g) = P $ \str -> case g str of
         Just (x, str') -> Just (f x, str')
         Nothing -> Nothing
-    -- fmap f (P g) = P $ \str -> do
-    --     (x, str') <- g str
-    --     pure (f x, str')
 
 instance Applicative Parser where
     pure :: a -> Parser a
@@ -24,7 +21,6 @@ instance Applicative Parser where
         (f, str') <- pF str
         (x, str'') <- g str'
         pure (f x, str'')
---
 
 eof :: Parser ()
 eof = P $ \str -> case str of
@@ -36,42 +32,26 @@ char c = P $ \str -> case str of
     (x:xs) | x == c -> Just (c, xs)
     _               -> Nothing
 
---
 instance Alternative Parser where
     empty :: Parser a
     empty = P $ \_ -> Nothing
 
     (<|>) :: Parser a -> Parser a -> Parser a
-    -- (<|>) (P pF) (P g) = P $ \str -> case pF str of
-    --     Nothing -> g str
-    --     _       -> pF str
     (<|>) p g = P $ \str -> case runParser p str of
         Just res -> Just res
         Nothing -> runParser g str
---
+
 charXY :: Parser Char
 charXY = char 'x' <|> char 'y'
 
 anyChar :: Parser Char
 anyChar = foldr (<|>) empty $ map char ['a'..'z']
--- char 'a' <|> char 'b' char <|> 'c'
-
--- foo = traverse char ['a'..'z']
--- runParser foo ['a'..'z']
--- Just ("abcdefghijklmnopqrstuvwxyz","")
 
 string :: String -> Parser [Char]
 string = traverse char
 
 as :: Parser [Char]
 as = many (char 'a')
-
-some' :: Alternative f => f a -> f [a]
-some' f = (:) <$> f <*> many' f
--- (:) - const
-
-many' :: Alternative f => f a -> f [a]
-many' f = some' f <|> pure []
 
 data Bit = T | F
     deriving (Eq, Ord, Show)
@@ -81,7 +61,6 @@ data ShortByte = SB Bit Bit Bit Bit
 
 bitF :: Parser Bit
 bitF = char '0' *> pure F
--- eldobja és odarakja a bitnek az eredményét
 
 bitT :: Parser Bit
 bitT = char '1' *> pure T
@@ -89,13 +68,8 @@ bitT = char '1' *> pure T
 bit :: Parser Bit
 bit = bitF <|> bitT
 
-byte :: Parser ShortByte
-byte = SB <$> bit <*> bit <*> bit <*> bit
-
 shortByte :: Parser ShortByte
 shortByte = SB <$> bit <*> bit <*> bit <*> bit
-
--- runParser shortByte "0101"
 
 instance Monad Parser where
     return :: a -> Parser a
@@ -105,32 +79,18 @@ instance Monad Parser where
     (>>=) p k = P $ \str -> case runParser p str of
         Nothing         -> Nothing
         Just (x, str')  -> runParser (k x) str'
---
 
 times :: Int -> Parser a -> Parser [a]
 times n p = traverse (\_ -> p) [1..n]
--- runParser (times 3 (char 'x')) "xxx"
--- Just ("xxx","")
 
 digit :: Parser Int
 digit = fmap (\n -> n - 48)
         . fmap fromEnum
         . foldr (<|>) empty
-        $ map char ['0'..'9'] -- kell egy fv ami 0-9 karaktereket átalakítja számokká
-
-int :: Parser Int
-int = undefined
+        $ map char ['0'..'9']
 
 intTuple :: Parser (Int, Int)
 intTuple = (,) <$> digit <*> digit
 
 bits :: Parser [Int]
 bits = many (digit)
-
-natural :: Parser Int
-natural = foldl (\acc cur -> acc*10 + cur) 0 <$> some digit
-
-foo :: Parser a -> Parser [a]
-foo p = do
-    n <- int
-    times n p

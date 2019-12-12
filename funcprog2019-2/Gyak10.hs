@@ -7,7 +7,7 @@ import Control.Monad.Writer
 htiz = fmap (*3) (+100) 1
 
 data CMaybe a = CNothing | CJust Int a
-    deriving(Show)
+    deriving(Show,Eq,Ord)
 
 --
 instance Functor CMaybe where
@@ -36,15 +36,15 @@ instance Monoid (DList a) where
     mempty = DL (\xs -> [] ++ xs)
     (DL f) `mappend` (DL g) = DL (\xs -> f (g xs))
 
-instance Show (DList a) where  
-    show :: (DList a) -> String
-    show d = show (toList d)
-
+-- instance Show (DList a) where  
+--     show :: (DList a) -> String
+--     show d = show (toList d)
 
 main = [
+        fmap (++"ha") (CJust 0 "ho") == (CJust 1 "hoha"),
         unDL (fromList []) [1,2,3] == [1,2,3],
         unDL (fromList [1,2,3]) [4,5,6] == [1..6],
-        toList (fromList []) == [],
+        --toList (fromList []) == [],
         toList (fromList [1,2,3]) == [1,2,3]
         ]
 

@@ -44,23 +44,56 @@ merge (x:xs) (y:ys)
 -- 5. (bónusz) Definiáld a "mergeSort :: Ord a => [a] -> [a]" függvényt, ami a "merge"
 --     iterált felhasználásával rendez egy listát.
 mergeSort :: Ord a => [a] -> [a]
-mergeSort = undefined
+mergeSort (x:[]) =[x]
+mergeSort xs = do
+    let (cs,ds) = (divide xs ([],[]))
+    merge (mergeSort cs) (mergeSort ds)
+
+divide :: [a] -> ([a], [a]) -> ([a],[a])
+divide [] (as, bs) = (as, bs)
+divide (x:xs) (as, bs) = divide xs ((x:bs), as)
 
 -- 6. (bónusz) Definiáld a "sublists :: [a] -> [[a]]" függvényt, ami a bemenő lista
 --    minden lehetséges részlistáját visszaadja. Pl. "sublists [1, 2] == [[],
 --    [1], [2], [1, 2]]".  A részlisták sorrendje az eredményben tetszőleges, a
 --    fontos, hogy az össze részlista szerepeljen.
 sublists :: [a] -> [[a]]
-sublists = undefined
+sublists [] = [[]]
+sublists (a:as) =
+    let as' = sublists as in
+        map (a:) as' ++ as'
+
+
+-- részsorozata([],[]).
+-- részsorozata([X|Xs],[X|Rs]) :- részsorozata(Xs,Rs).
+-- részsorozata([_X|Xs],Rs) :- részsorozata(Xs,Rs).
 
 -- 7. Vegyük a következő ADT-t:
 
 data Tree a = Node a [Tree a]
-
+        deriving (Show)
 --    Írj "Eq a => Eq (Tree a)" instance-t
 --    Írj "mapTree :: (a -> b) -> Tree a -> Tree b" függvényt
+instance Eq a => Eq (Tree a) where
+    (==) (Node a []) (Node b []) = a == b
+    (==) (Node a _) (Node b []) = False
+    (==) (Node a []) (Node b _) = False
+    (==) (Node a xs) (Node b ys) = (a == b) && (xs == ys)
+
+
 mapTree :: (a -> b) -> Tree a -> Tree b
-mapTree = undefined
+mapTree f (Node a []) = Node (f a) []
+mapTree f (Node a xs) = Node (f a) (map (mapTree f) xs)
+
+tr1 = Node 1 [Node 5 []]
+tr2 = Node 5 [Node 1 []]
+tr3 = mapTree (* 2) tr1
+tr4 = mapTree (/ 2) tr3
+
+main = [ 
+         tr1 == tr2,
+         tr2 == tr3,
+         tr4 == tr1 ]
 
 -- 8. Vegyük a következő ADT-t:
 

@@ -19,21 +19,35 @@ newtype PostOrder t a = PostOrder { getPostOrder :: t a } deriving (Eq, Show)
 -- Adjuk meg a következő Foldable példányokat!
 instance Foldable RoseTree where
     toList = foldr (:) []
-    foldMap = undefined
+    foldMap f (Node a as) = f a `mappend` foldMap (foldMap f) as
 
 instance Foldable (PreOrder RoseTree) where
-    toList = foldMap (\x -> [])
-    foldMap = undefined
+    toList = foldMap (\x -> [x])
+    foldMap f (PreOrder (Node a as)) = f a <> foldMap (foldMap f . PreOrder) as
 
 instance Foldable (PostOrder RoseTree) where
-    toList = foldMap (\x -> [])
-    foldMap = undefined
+    toList = foldMap (\x -> [x])
+    foldMap f (PostOrder (Node a as)) = foldMap (foldMap f . PostOrder) as <> f a
 
 preOrder  :: RoseTree a -> [a]
-preOrder (Node a []) = []
+preOrder n = toList (PreOrder n)
 
 postOrder :: RoseTree a -> [a]
-postOrder (Node a []) = []
+postOrder n = toList (PostOrder n)
 
 --A toList függvény segítségével definiáljuk a fentebb említett preOrder és postOrder függvényeket!
 
+haskellTree :: RoseTree String
+haskellTree = Node "Haskell"
+              [ Node "is"
+                [ Node "a" []
+                , Node "purely" []
+                ]
+              , Node "functional"
+                [ Node "programming" []
+                , Node "language" []
+                ]
+              ]
+
+main = [ "Haskell is a purely functional programming language" == unwords (preOrder haskellTree),
+       "a purely is programming language functional Haskell" == unwords (postOrder haskellTree) ]

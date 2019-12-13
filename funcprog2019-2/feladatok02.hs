@@ -63,7 +63,6 @@ sublists (a:as) =
     let as' = sublists as in
         map (a:) as' ++ as'
 
-
 -- részsorozata([],[]).
 -- részsorozata([X|Xs],[X|Rs]) :- részsorozata(Xs,Rs).
 -- részsorozata([_X|Xs],Rs) :- részsorozata(Xs,Rs).
@@ -79,7 +78,6 @@ instance Eq a => Eq (Tree a) where
     (==) (Node a _) (Node b []) = False
     (==) (Node a []) (Node b _) = False
     (==) (Node a xs) (Node b ys) = (a == b) && (xs == ys)
-
 
 mapTree :: (a -> b) -> Tree a -> Tree b
 mapTree f (Node a []) = Node (f a) []
@@ -98,6 +96,7 @@ main = [
 -- 8. Vegyük a következő ADT-t:
 
 data Tree2 a = Leaf a | Branch (Int -> Tree2 a)
+--    deriving (Show)
 
 --    Írj legalább 5 darab (Tree2 a) típusú definíciót.
 --    Írj "mapTree2 :: (a -> b) -> Tree2 a -> Tree2 b" függvényt.
@@ -108,7 +107,8 @@ t4 = Branch $ \i -> if i < 0 then Leaf "foo" else Leaf "bar"
 t5 = Branch $ \_ -> t2
 
 mapTree2 :: (a -> b) -> Tree2 a -> Tree2 b
-mapTree2 = undefined
+mapTree2 f (Leaf a) = Leaf (f a)
+mapTree2 f (Branch g) = Branch (\i -> mapTree2 f (g i))
 
 -- 9. Definiáld a következő függvényt:
 --    Működés: alkalmazzuk a kapott függvényt a lista minden elemére,
@@ -116,7 +116,10 @@ mapTree2 = undefined
 --    legyen (Just <az összes b-típusú eredmény listája>), egyébként Nothing.
 
 bindMaybe :: Maybe a -> (a -> Maybe b) -> Maybe b
-bindMaybe = undefined
+bindMaybe Nothing f = Nothing
+bindMaybe (Just a) f = f a
 
 mapMaybe :: (a -> Maybe b) -> [a] -> Maybe [b]
-mapMaybe = undefined
+mapMaybe f [] = Nothing
+mapMaybe f (a:as) =
+    bindMaybe (f a) (\a -> bindMaybe (mapMaybe f as) (\as -> Just (a:as)) )

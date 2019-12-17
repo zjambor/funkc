@@ -26,18 +26,18 @@ countElems :: RoseTree a -> Int
 countElems (Branch _ []) = 1
 countElems (Branch x (a:as)) = (countElems a) + (countElems (Branch x as))
 
-maxElem :: Ord a => RoseTree a -> a
-maxElem (Branch n []) = n
-maxElem (Branch x (a:as)) = max' as 0
+-- maxElem :: Ord a => RoseTree a -> a
+-- maxElem (Branch n []) = n
+-- maxElem (Branch x (a:as)) = max' as 0
 
-max' :: RoseTree Int -> Int -> Int
-max' (Branch x (a:as)) y
-    | max' (Branch y as)
+-- max' :: RoseTree Int -> Int -> Int
+-- max' (Branch x (a:as)) y
+--     | max' (Branch y as)
 
 
-numberElems :: RoseTree a -> RoseTree (a, Int)
-numberElems (Branch x (a:as)) = evalState (mapMRoseTree go (Branch x (a:as))) 0
-  where go (Branch x (a:as)) = do {n <- get; put (n + 1); pure (a,n)}
+-- numberElems :: RoseTree a -> RoseTree (a, Int)
+-- numberElems (Branch x (a:as)) = evalState (mapMRoseTree go (Branch x (a:as))) 0
+--   where go (Branch x (a:as)) = do {n <- get; put (n + 1); pure (a,n)}
 --
 
 mapMList :: Monad m => (a -> m b) -> [a] -> m [b]
@@ -52,7 +52,6 @@ mapMRoseTree f (Branch a ts) = do
   b  <- f a
   ts <- mapMList (mapMRoseTree f) ts
   pure $ Branch b ts
-
 
 ex1 :: RoseTree Int
 ex1 = Branch 2 $

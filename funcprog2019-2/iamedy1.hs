@@ -26,32 +26,30 @@ countElems :: RoseTree a -> Int
 countElems (Branch _ []) = 1
 countElems (Branch x (a:as)) = (countElems a) + (countElems (Branch x as))
 
--- maxElem :: Ord a => RoseTree a -> a
--- maxElem (Branch n []) = n
--- maxElem (Branch x (a:as)) = max' as 0
+maxElem :: Ord a => RoseTree a -> a
+maxElem (Branch a []) = a     -- For a tree without subtrees the maximum is it's value
+maxElem (Branch a subtrees) =
+    maximum (a : map maxElem subtrees)   
 
--- max' :: RoseTree Int -> Int -> Int
--- max' (Branch x (a:as)) y
---     | max' (Branch y as)
+--Definiáljuk azt a függvényt, amely megszámozza egy RoseTree elemeit! A bejárás sorrendje legyen preorder, azaz először az elemet látogassuk meg, majd balról jobbra a részfákat. (2 pont)
 
+numberElems :: RoseTree a -> RoseTree (a, Int)
+numberElems = undefined
 
--- numberElems :: RoseTree a -> RoseTree (a, Int)
--- numberElems (Branch x (a:as)) = evalState (mapMRoseTree go (Branch x (a:as))) 0
---   where go (Branch x (a:as)) = do {n <- get; put (n + 1); pure (a,n)}
---
+--Segítség: Használjuk State monádot és a forM vagy mapM függvényeket!
 
-mapMList :: Monad m => (a -> m b) -> [a] -> m [b]
-mapMList f []     = pure []
-mapMList f (a:as) = do
-  b  <- f a
-  bs <- mapMList f as
-  pure $ b:bs
+instance Applicative RoseTree where
+    pure :: a -> RoseTree a
+    pure x = Branch x []
 
-mapMRoseTree :: Monad m => (a -> m b) -> RoseTree a -> m (RoseTree b)
+    (<*>) :: RoseTree (a -> b) -> RoseTree a -> RoseTree b
+    (<*>) (Branch f tree) (Branch x subtrees) = Branch (f x) (zipWith (<*>) tree subtrees)
+
+{- mapMRoseTree :: Monad m => (a -> m b) -> RoseTree a -> m (RoseTree b)
 mapMRoseTree f (Branch a ts) = do
   b  <- f a
   ts <- mapMList (mapMRoseTree f) ts
-  pure $ Branch b ts
+  pure $ Branch b ts -}
 
 ex1 :: RoseTree Int
 ex1 = Branch 2 $

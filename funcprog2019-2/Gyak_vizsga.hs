@@ -53,4 +53,5 @@ ex2 = Branch 2 $
           ]
       ]
 --
-
+--toList ex2
+--fmap (*2) ex2

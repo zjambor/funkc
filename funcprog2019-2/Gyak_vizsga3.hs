@@ -57,18 +57,45 @@ zipWith' f (a:as)   (b:bs) = f (Both a b) : zipWith' f as bs
 -- Alkalmazzunk egy a -> Maybe b függvényt minden a típusú értéken az inputban. 
 -- Ha bármelyik függvényhívás eredménye Nothing, legyen a végeredmény Nothing, egyébként a végeredmény Just-ban az output lista, ahol a függvényt minden a-ra alkalmaztuk. 
 -- Tipp: használjunk Maybe monádot. (2 pont)
-mapMaybeLeft :: (a -> Maybe b) -> [Either' a c] -> Maybe [Either' b c]
-mapMaybeLeft f [] = Just []
-mapMaybeLeft f ts = evalState (traverse go f ts) 0 where
-    go :: a -> State Int (a, Int)
-    go a = do 
-      n <- get
-      put (n + 1) 
-      pure (a, n)
 
+ff :: Int -> Maybe Int
+ff x = if x == 0 then Nothing else Just x
+
+mapMaybeLeft :: (a -> Maybe b) -> [Either' a c] -> Maybe [Either' b c]
+mapMaybeLeft f ts = traverse go ts where
+    go (Left' a) = Left' <$> f a
+    go (Right' b) = pure (Right' b)
+    go (Both a b) = flip Both b <$> f a
 
 -- Példák:
 -- mapMaybeLeft (\_ -> Just True) [Left' ()] == Just [Left' True]
 -- mapMaybeLeft (\x -> if x == 0 then Nothing else Just x) [Right' 10, Both 0 10] == Nothing
 -- mapMaybeLeft (\x -> if x == 0 then Nothing else Just x) [Right' 10, Both 1 10] == Just [Right' 10,Both 1 10]
 
+data Tree a = Leaf a | Node (Tree a) (Tree a)
+  deriving (Eq, Show)
+
+-- Írjunk Functor, Foldable és Traversable instance-ot Tree-hez. (2 pont)
+instance Functor Tree where
+    fmap f (Leaf a) = Leaf (f a)
+    fmap f (Node l r) = Node (fmap f l) (fmap f r)
+
+instance Foldable Tree where
+    foldMap f (Leaf a) = f a
+    foldMap f (Node l r) = foldMap f l <> foldMap f r
+
+instance Traversable Tree where
+    traverse f (Leaf a) = Leaf <$> f a
+    traverse f (Node l r) = Node <$> traverse f l <*> traverse f r
+
+-- Irjunk egy függvényt, ami minden levélben az attól balra levő levelekben levő Int-ek összegét adja vissza. Tipp: használjunk State monádot. (2 pont)
+-- treeSums :: Tree Int -> Tree Int
+
+
+-- Példák:
+-- treeSums (Leaf 10) == Leaf 0
+-- treeSums (Node (Leaf 10) (Leaf 10)) == Node (Leaf 0) (Leaf 10)
+-- treeSums (Node (Leaf 10) (Node (Leaf 10) (Leaf 10))) == Node (Leaf 0) (Node (Leaf 10) (Leaf 20))
+-- treeSums (Node (Node (Leaf 1) (Leaf 100)) (Leaf 0)) == Node (Node (Leaf 0) (Leaf 1)) (Leaf 101)
+
+-- utánanézni: traverse, <>, <$>

@@ -199,12 +199,54 @@ annotateSums = go 0 where
 -- annotateSums ex1 == Node 1 (Leaf 1) (Node 2 (Leaf 3) (Leaf 3))
 -- annotateSums (Leaf 10) == Leaf 0
 
-
 -- Írjunk egy függvényt, ami minden Node-ba a Node alatti levelekben levő Int-ek összegét teszi. (2 pont)
--- annotateSums' :: Tree a Int -> Tree Int Int
 
+annotateSums' :: Tree a Int -> Tree Int Int
+annotateSums' t = evalState (go t) 0 where
+    go :: Tree a Int -> State Int (Tree Int Int)
+    go (Leaf n) = do
+        put n
+        pure (Leaf n)
+    go (Node n l r) = do
+        l' <- go l
+        n <- get
+        r' <- go r
+        m <- get
+        put (n + m)
+        pure (Node (n + m) l' r')
 
 -- Példák a működésre:
 -- annotateSums' ex1 == Node 60 (Leaf 10) (Node 50 (Leaf 20) (Leaf 30))
 -- annotateSums' (Leaf 0) == Leaf 0
 
+data BinTree a
+  = Nil 
+  | Branchh a (BinTree a) (BinTree a)
+  deriving (Eq, Ord, Show)
+
+ex5 :: BinTree Int
+ex5 = Branchh 1 Nil (Branchh 2 Nil Nil)
+
+instance Functor BinTree where
+    fmap f Nil = Nil
+    fmap f (Branchh a l r) = Branchh (f a) (fmap f l) (fmap f r)
+
+instance Foldable BinTree where
+    foldMap f Nil = mempty
+    foldMap f (Branchh a t1 t2) = f a <> foldMap f t1 <> foldMap f t2 
+    toList = foldMap (\x -> [x])
+
+instance Traversable BinTree where
+    traverse f Nil = pure Nil
+    traverse f (Branchh a t1 t2) = Branchh <$> f a <*> traverse f t1 <*> traverse f t2 
+
+--http://hackage.haskell.org/package/folds-0.2/src/src/Data/Fold/Internal.hs
+numberNodes :: BinTree a -> BinTree (Int, a)
+numberNodes t = evalState (traverse go t) 0 where
+  go :: a -> State Int (Int, a)
+  go a = do 
+      n <- get
+      put (n + 1) 
+      pure (n, a)
+
+--numberNodes ex5

@@ -89,8 +89,13 @@ instance Traversable Tree where
     traverse f (Node l r) = Node <$> traverse f l <*> traverse f r
 
 -- Irjunk egy függvényt, ami minden levélben az attól balra levő levelekben levő Int-ek összegét adja vissza. Tipp: használjunk State monádot. (2 pont)
--- treeSums :: Tree Int -> Tree Int
-
+treeSums :: Tree Int -> Tree Int
+treeSums t = evalState (traverse (\n ->
+    do
+        m <- get
+        put(n + m)
+        pure(m))
+    t) 0 
 
 -- Példák:
 -- treeSums (Leaf 10) == Leaf 0
@@ -99,3 +104,4 @@ instance Traversable Tree where
 -- treeSums (Node (Node (Leaf 1) (Leaf 100)) (Leaf 0)) == Node (Node (Leaf 0) (Leaf 1)) (Leaf 101)
 
 -- utánanézni: traverse, <>, <$>
+

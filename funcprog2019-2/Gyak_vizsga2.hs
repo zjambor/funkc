@@ -14,15 +14,29 @@ import Control.Monad.Error.Class
 
 ------------------ EXERCISES -----------------
 
+data Tree a = Empty | Leaf a | Node (Tree a) a (Tree a)
 
+instance Functor Tree where
+  fmap f Empty        = Empty
+  fmap f (Leaf x)     = Leaf (f x)
+  fmap f (Node l k r) = Node (fmap f l) (f k) (fmap f r)
 
+instance Foldable Tree where
+    foldMap f Empty        = mempty
+    foldMap f (Leaf a)     = f a
+    foldMap f (Node l k r) = foldMap f l <> (f k) <> foldMap f r
 
+instance Traversable Tree where
+    traverse f Empty        = pure Empty
+    traverse f (Leaf x)     = Leaf <$> f x
+    traverse f (Node l k r) = Node <$> traverse f l <*> f k <*> traverse f r
 
 -------------------- SYNTAX --------------------
 
 data Lit
   = LBool Bool
   | LInt Int
+  | LStr String
   deriving (Eq, Ord, Show)
 
 type Name = String
@@ -43,6 +57,7 @@ data Expr
   | Eq Expr Expr
   | LEq Expr Expr
   | Not Expr
+  | Concat Expr Expr
   deriving (Eq, Ord, Show)
 
 data Statement
@@ -50,9 +65,7 @@ data Statement
   | Seq Statement Statement
   | If Expr Statement Statement
   | While Expr Statement
-  | Assign Var Expr
-  | LStr String Lit
-  | Concat Expr Expr Expr
+  | Assign Var Expr  
   deriving (Eq, Ord, Show)
 
 -------------------- PARSER BASE --------------------
@@ -61,6 +74,9 @@ type Parser a = StateT String Maybe a
 
 runParser :: Parser a -> String -> Maybe (a, String)
 runParser = runStateT
+
+evalParser :: Parser a -> String -> Maybe a
+evalParser p s = fmap fst $ runParser p s
 
 eof :: Parser ()
 eof = do
@@ -83,6 +99,9 @@ char c = do
 
 lowerAlpha :: Parser Char
 lowerAlpha = foldr (<|>) empty $ map char ['a'..'z']
+
+numeric :: Parser Char
+numeric = foldr (<|>) empty $ map char ['0'..'9']
 
 digit :: Parser Int
 digit = fmap (\n -> n - 48)
@@ -111,8 +130,12 @@ bLit :: Parser Lit
 bLit = token "true"  *> pure (LBool True)
     <|> token "false" *> pure (LBool False)
 
+-- sLit
+sLit :: Parser Lit
+sLit = (LStr <$> (char '\"' *> many (lowerAlpha <|> numeric <|> char ' ') <* token "\"")) <* ws
+
 lit :: Parser Lit
-lit = iLit <|> bLit
+lit = iLit <|> bLit <|> sLit
 
 parens :: Parser a -> Parser a
 parens p = token "(" *> p <* token ")"
@@ -125,6 +148,7 @@ expr' = ELit <$> lit
 expr :: Parser Expr
 expr = Plus <$> expr' <*> (token "+"  *> expr)
     <|> And  <$> expr' <*> (token "&&" *> expr)
+    <|> Concat <$> expr' <*> (token "++" *> expr)
     <|> expr'
 
 var :: Parser Var
@@ -194,11 +218,21 @@ evalBool e = do
     RTLit (LBool b) -> return b
     _ -> throwError $ show e ++ " does not evaluate to a Boolean"
 
+evalString :: Expr -> Eval String
+evalString e = do
+  e' <- evalExpr e
+  case e' of
+    RTLit (LStr s) -> return s
+    _ -> throwError $ show e ++ " does not evaluate to a String"
+
 mkRTInt :: Int -> RTVal
 mkRTInt = RTLit . LInt
 
 mkRTBool :: Bool -> RTVal
 mkRTBool = RTLit . LBool
+
+mkRTString :: String -> RTVal
+mkRTString = RTLit . LStr
 
 evalUnaryOp :: (Expr -> Eval a) ->
                (b -> RTVal) ->
@@ -217,5 +251,5 @@ evalExpr (Mul lhs rhs) = evalBinOp evalInt evalInt mkRTInt (*) lhs rhs
 evalExpr (And lhs rhs) = evalBinOp evalBool evalBool mkRTBool (&&) lhs rhs
 evalExpr (LEq lhs rhs) = evalBinOp evalInt evalInt mkRTBool (<=) lhs rhs
 evalExpr (Not arg) = evalUnaryOp evalBool mkRTBool (not) arg
-
+evalExpr (Concat lhs rhs) = evalBinOp evalString evalString mkRTString (++) lhs rhs
 

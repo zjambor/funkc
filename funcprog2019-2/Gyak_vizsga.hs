@@ -1,9 +1,13 @@
 {-# LANGUAGE FlexibleInstances, InstanceSigs #-}
 module Vizsga_Gyak where
 
-import Data.Foldable (Foldable(foldMap), toList)
+--import Data.Foldable (Foldable(foldMap), toList)
 import Data.Traversable (Traversable(traverse))
-import Control.Monad.State
+--import Control.Monad.State
+import Data.Foldable
+import Data.Traversable
+import Prelude hiding (foldr)
+import Control.Monad.Trans.State.Lazy
 
 data RoseTree a = Branch a [RoseTree a]
   deriving (Eq, Ord, Show)
@@ -46,7 +50,7 @@ instance Foldable (Tree a) where
 
 instance Traversable (Tree a) where
     traverse f (Leaf a) = Leaf <$> f a
-    traverse f (Node a t1 t2) = Node <$> pure a <*> traverse f t1 <*> traverse f t2 
+    traverse f (Node a t1 t2) = Node <$> pure a <*> traverse f t1 <*> traverse f t2
 --
 ex2 :: RoseTree Int
 ex2 = Branch 2 $
@@ -101,8 +105,15 @@ numberElems t = evalState (traverse go t) 0 where
   go :: a -> State Int (a, Int)
   go a = do 
       n <- get
-      put (n + 1) 
+      put (n + 1)
       pure (a, n)
+
+numberTree :: RoseTree a -> RoseTree (a, Int)
+numberTree tr = flip evalState 0 $ for tr $ \x ->
+      do
+        v <- get
+        put $! (v+1)
+        return (x, v)
 
 --Segítség: Használjuk State monádot és a forM vagy mapM függvényeket!
 
@@ -250,3 +261,4 @@ numberNodes t = evalState (traverse go t) 0 where
       pure (n, a)
 
 --numberNodes ex5
+

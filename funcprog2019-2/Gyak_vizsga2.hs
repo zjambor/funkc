@@ -132,7 +132,7 @@ bLit = token "true"  *> pure (LBool True)
 
 -- sLit
 sLit :: Parser Lit
-sLit = (LStr <$> (char '\"' *> many (lowerAlpha <|> numeric <|> char ' ') <* token "\"")) <* ws
+sLit = (LStr <$> (char '\"' *> many (lowerAlpha <|> numeric <|> char ' ') <* token '\"')) <* ws
 
 lit :: Parser Lit
 lit = iLit <|> bLit <|> sLit

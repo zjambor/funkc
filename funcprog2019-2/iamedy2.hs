@@ -55,12 +55,6 @@ labelPaths t = evalState (traverse go t) [] where
 --         | x /= x' = contains x l && contains x r
 --         | otherwise = True
 
-main = [ 
-    labelPaths (Alpha 1 $ Beta 2 (Alpha 3 Omega) (Alpha 4 Omega)) == (Alpha (1,[1]) $ Beta (2,[2,1]) (Alpha (3,[3,2,1]) Omega) (Alpha (4,[4,2,1]) Omega)),
-    fmap (head . snd) (labelPaths ex1) == ex1,
-    fmap fst (labelPaths ex1) == ex1
-    ]
-
 ex1 :: XTree Int
 ex1 = Alpha 1 $ Alpha 2 $
         Beta 3
@@ -286,4 +280,51 @@ evalExpr (Not arg) = evalUnaryOp evalBool mkRTBool (not) arg
 evalExpr (Mod lhs rhs) = evalBinOp evalInt evalInt mkRTInt (%) lhs rhs
 
 
+-------------------- MAIN ----------------------------
 
+main = [
+        fmap (2*) Omega                == Omega,
+        fmap (2*) (Alpha 1 Omega)      == (Alpha 2 Omega),
+        fmap (2*) (Beta 1 Omega Omega) == (Beta 2 Omega Omega),
+        fmap ((+1) . (*2)) ex1         == (fmap (+1) . fmap (*2) $ ex1),
+
+        sum Omega                 == 0,
+        length (Alpha 1 Omega)    == 1,
+        null (Beta 1 Omega Omega) == False,
+        product ex1               == 40320,
+
+        traverse Just ex1            == Just ex1,
+        traverse (const Nothing) ex1 == Nothing,
+
+        leastElem ex1 == 1,
+        leastElem (Alpha 3 $ Beta 4 (Alpha 2 Omega) (Omega)) == 2,
+
+        -- containsAll ex1 [1,2,3]   == True,
+        -- containsAll ex1 [0]       == False,
+        -- containsAll ex1 [0,1,2,3] == False,      
+
+        -- labelDepth (Alpha () $ Alpha () $ Alpha () $ Omega) == (Alpha ((),0) $ Alpha ((),1) $ Alpha ((),2) $ Omega)
+        -- labelDepth (Alpha 3 $ Beta 4 (Alpha 2 Omega) (Alpha 4 Omega)) == (Alpha (3,0) $ Beta (4,1) (Alpha (2,2) Omega) (Alpha (4,2) Omega))
+        -- fmap fst (labelDepth ex1) == ex1
+
+        labelPaths (Alpha 1 $ Alpha 2 $ Alpha 3 $ Omega) == (Alpha (1,[1]) $ Alpha (2,[2,1]) $ Alpha (3,[3,2,1]) $ Omega),
+        labelPaths (Alpha 1 $ Beta 2 (Alpha 3 Omega) (Alpha 4 Omega)) == (Alpha (1,[1]) $ Beta (2,[2,1]) (Alpha (3,[3,2,1]) Omega) (Alpha (4,[4,2,1]) Omega)),
+        fmap (head . snd) (labelPaths ex1) == ex1,
+        fmap fst (labelPaths ex1) == ex1,
+
+        (fst <$> (runParser expr "11 % 3")) == Just (Mod (ELit $ LInt 11) (ELit $ LInt 3)),
+        (fst <$> (runParser expr "11   %   3")) == Just (Mod (ELit $ LInt 11) (ELit $ LInt 3)),
+        (fst <$> (runParser expr "11   %   true")) == Just (Mod (ELit $ LInt 11) (ELit $ LBool True)),
+        (fst <$> (runParser expr "(11  %  3)  +  2")) == Just (Plus (Mod (ELit $ LInt 11) (ELit $ LInt 3)) (ELit $ LInt 2)),
+
+        evalEval (evalExpr $ Mod (ELit $ LInt 11) (ELit $ LInt 3)) mempty == Right (RTLit (LInt 2)),
+        (snd <$> runEval (evalExpr $ Mod (ELit $ LInt 11) (ELit $ LInt 3)) mempty) == Right mempty,
+
+        (fst <$> (runParser statement "Swap(x,y)")) == Just (Swap (Var "x") (Var "y")),
+        (fst <$> (runParser statement "Swap( x  , y )")) == Just (Swap (Var "x") (Var "y"))
+
+        -- (snd <$> runEval (evalStatement (Swap (Var "x") (Var "y"))) (Map.fromList [(Var "x", RTLit $ LInt 0), (Var "y", RTLit $ LInt 1)])) == Right (Map.fromList [(Var "x", RTLit $ LInt 1), (Var "y", RTLit $ LInt 0)]),
+        -- (snd <$> runEval (evalStatement (Swap (Var "x") (Var "y"))) (Map.fromList [(Var "x", RTLit $ LInt 0), (Var "y", RTLit $ LInt 1), (Var "z", RTLit $ LInt 2)])) == Right (Map.fromList [(Var "x", RTLit $ LInt 1), (Var "y", RTLit $ LInt 0), (Var "z", RTLit $ LInt 2)]),
+        -- (snd <$> runEval (evalStatement (Swap (Var "x") (Var "y"))) (Map.fromList [(Var "x", RTLit $ LInt 0)])) == Left "undefined variable: y",
+        -- (snd <$> runEval (evalStatement (Swap (Var "x") (Var "y"))) (Map.fromList [(Var "y", RTLit $ LInt 1)])) == Left "undefined variable: x"
+        ]

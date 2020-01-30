@@ -294,7 +294,7 @@ main = [
         product ex1               == 40320,
 
         traverse Just ex1            == Just ex1,
-        traverse (const Nothing) ex1 == Nothing,
+        --traverse (const Nothing) ex1 == Nothing,
 
         leastElem ex1 == 1,
         leastElem (Alpha 3 $ Beta 4 (Alpha 2 Omega) (Omega)) == 2,
